@@ -4,7 +4,7 @@ Follow these steps **before** starting the app. Keys are only needed at the end 
 
 ## 1. Prerequisites
 
-- Node.js 18+ (this machine has a working Node/npm install)
+- Node.js 18+ and Yarn (see `yarn.lock`)
 - A free [Supabase](https://supabase.com) account
 - An [OpenAI API](https://platform.openai.com/api-keys) key with billing enabled
 
@@ -15,7 +15,7 @@ Follow these steps **before** starting the app. Keys are only needed at the end 
 3. Open **SQL Editor** and run the full contents of [`supabase/schema.sql`](../supabase/schema.sql).
 4. Open **Storage** → **New bucket**:
     - Name: `documents`
-    - Public: **Yes** (simplest for learning)
+    - Public: **Yes**
 
 ## 3. Copy credentials
 
@@ -48,15 +48,15 @@ Paste real values into `.env.local`. Do not commit that file.
 ## 5. Run
 
 ```bash
-npm install
-npm run dev
+yarn install
+yarn dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
 
 ### If you already ran the original schema
 
-Also run [`supabase/conversations.sql`](../supabase/conversations.sql) in the SQL Editor (creates `conversations` + `messages`). Choose **Run without RLS** for local learning.
+Also run [`supabase/conversations.sql`](../supabase/conversations.sql) in the SQL Editor (creates `conversations` + `messages`).
 
 ### Smoke test
 
@@ -73,11 +73,11 @@ Also run [`supabase/conversations.sql`](../supabase/conversations.sql) in the SQ
 | Symptom                          | Likely cause                                                                                  |
 | -------------------------------- | --------------------------------------------------------------------------------------------- |
 | Storage RLS error on upload      | Missing / wrong `SUPABASE_SECRET_KEY`                                                         |
-| Env / missing key errors         | Incomplete `.env.local` — restart `npm run dev` after edits                                   |
+| Env / missing key errors         | Incomplete `.env.local` — restart `yarn dev` after edits                                      |
 | Empty PDF text                   | Scanned/image PDF (no extractable text) — try `.txt` first                                    |
 | `match_documents` errors         | Schema SQL not applied, or `vector` extension missing                                         |
 | Index creation fails on empty DB | Rare with `pgvector`; if `ivfflat` index errors, create it after your first successful upload |
 
 ## Cost note
 
-OpenAI usage is pay-as-you-go. For learning with small files and a few searches, cost is typically cents. Set a usage cap in the OpenAI dashboard if you want a hard limit.
+OpenAI usage is pay-as-you-go. With small files and a few searches, cost is typically cents. Set a usage cap in the OpenAI dashboard if you want a hard limit.

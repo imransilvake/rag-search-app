@@ -32,7 +32,7 @@ mcp/
 
 ## Design system
 
-- Tokens: [`src/styles/tokens.css`](../src/styles/tokens.css) (portfolio GENERAL light/dark)
+- Tokens: [`src/styles/tokens.css`](../src/styles/tokens.css) (light/dark semantic variables)
 - Theme toggle: cookie `theme` (`light`|`dark`) + FOUC script; no `cookies()` in layout
 - Styling rules: [styling-system skill](../.agents/skills/styling-system/SKILL.md)
 

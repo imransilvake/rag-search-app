@@ -24,7 +24,7 @@ src/
 │   ├── search/           # SearchScreen + conversation sidebar / chat UI
 │   └── documents/        # DocumentsScreen + upload / PDF modals
 ├── styles/
-│   ├── tokens.css        # GENERAL light/dark semantic CSS variables
+│   ├── tokens.css        # Light/dark semantic CSS variables
 │   ├── tailwind-stack.css# @theme, spacing, typography, label-*
 │   └── prettier-tailwind-entry.css
 ├── theme/                # ThemeSchema, cookie, ThemeProvider, ThemeToggle
