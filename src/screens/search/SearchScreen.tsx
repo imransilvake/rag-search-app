@@ -48,7 +48,13 @@ const SearchScreen = () => {
 
 					<SourceList sources={chat.sources} />
 
-					{!chat.messages.length && chat.answer && (
+					{chat.error && (
+						<div className="mt-lg rounded-md border border-destructive/40 bg-destructive/15 p-lg" role="alert">
+							<p className="label-1 text-destructive">{chat.error}</p>
+						</div>
+					)}
+
+					{!chat.messages.length && !chat.error && chat.answer && (
 						<div className="mt-lg rounded-md border border-border bg-surface-panel p-lg shadow-sm">
 							<h2 className="mb-md text-h4-semibold text-midnight">Answer</h2>
 							<p className="label-1 whitespace-pre-wrap text-foreground">{chat.answer}</p>

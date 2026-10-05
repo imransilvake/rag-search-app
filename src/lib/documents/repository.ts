@@ -84,19 +84,39 @@ export async function listDocuments(): Promise<DocumentSummary[]> {
 
 export async function getDocumentDetail(documentId: string): Promise<DocumentDetail> {
 	const supabase = getSupabaseAnon();
-	const { data: chunks, error } = await supabase.from('documents').select('content, metadata').eq('metadata->>document_id', documentId).order('metadata->>chunk_index', { ascending: true });
+	const { data: chunks, error } = await supabase.from('documents').select('content, metadata').eq('metadata->>document_id', documentId);
 
 	if (error || !chunks?.length) {
 		throw new Error(error?.message || 'Document not found');
 	}
 
-	const metadata = chunks[0].metadata as DocumentMetadata;
+	// JSON metadata fields sort as text in Postgres — sort numerically in app code.
+	const ordered = [...chunks].sort((left, right) => {
+		const leftIndex = (left.metadata as DocumentMetadata | null)?.chunk_index ?? 0;
+		const rightIndex = (right.metadata as DocumentMetadata | null)?.chunk_index ?? 0;
+		return leftIndex - rightIndex;
+	});
+
+	const metadata = ordered[0].metadata as DocumentMetadata;
 	return {
 		...toSummary(metadata),
 		id: documentId,
-		total_chunks: chunks.length,
-		fullText: chunks.map((c) => c.content as string).join('\n\n')
+		total_chunks: ordered.length,
+		fullText: ordered.map((chunk) => chunk.content as string).join('\n\n')
 	};
+}
+
+/** Best-effort rollback after a failed ingest (Storage object and/or partial chunk rows). */
+export async function cleanupFailedIngest(params: { documentId: string; filePath: string }): Promise<void> {
+	const supabaseService = getSupabaseService();
+	const supabaseAnon = getSupabaseAnon();
+
+	await supabaseService.storage.from(DOCUMENTS_BUCKET).remove([params.filePath]);
+
+	const { error } = await supabaseAnon.from('documents').delete().eq('metadata->>document_id', params.documentId);
+	if (error) {
+		throw new Error(error.message);
+	}
 }
 
 export async function getDocumentMetadata(documentId: string): Promise<DocumentMetadata> {

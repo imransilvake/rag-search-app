@@ -131,7 +131,11 @@ export const useSearchChat = () => {
 			if (data.conversationId) {
 				const detailResponse = await fetch(`/api/conversations?id=${data.conversationId}`);
 				const detail = await detailResponse.json();
-				if (!detail.error) setMessages(detail.messages || []);
+				if (detail.error) {
+					setError(detail.error);
+					return;
+				}
+				setMessages(detail.messages || []);
 			}
 		} catch (searchError) {
 			setError(searchError instanceof Error ? searchError.message : 'Search failed');
