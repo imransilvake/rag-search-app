@@ -2,6 +2,7 @@ import { Button } from '@/atoms/button/Button';
 import type { DocumentSummary } from '@/lib/documents/types';
 import { formatDate } from '@/utils/format-date';
 import { formatFileSize } from '@/utils/format-file-size';
+import { formatFileType } from '@/utils/format-file-type';
 
 export const DocumentTable = ({
 	documents,
@@ -31,18 +32,20 @@ export const DocumentTable = ({
 						const isPdf = document.file_name.toLowerCase().endsWith('.pdf');
 						return (
 							<tr key={document.id} className="hover:bg-accent">
-								<td className="label-2-sb px-lg py-md text-midnight">
-									<div>{document.file_name}</div>
-									{document.summary ? <p className="label-3 mt-xs line-clamp-2 max-w-md font-normal text-overcast">{document.summary}</p> : null}
+								<td className="max-w-md px-lg py-md text-midnight">
+									<div className="label-2-m break-words">{document.file_name}</div>
+									{document.summary ? <p className="label-3 mt-xs line-clamp-2 font-normal text-overcast">{document.summary}</p> : null}
 								</td>
 								<td className="px-lg py-md">
-									<span className="label-3-sb rounded-full bg-secondary px-sm py-xxs text-secondary-foreground">{document.file_type || 'unknown'}</span>
+									<span className="label-3-sb rounded-full bg-secondary px-sm py-xxs whitespace-nowrap text-secondary-foreground">
+										{formatFileType(document.file_type, document.file_name)}
+									</span>
 								</td>
-								<td className="label-2 px-lg py-md text-overcast">{formatFileSize(document.file_size)}</td>
-								<td className="label-2 px-lg py-md text-overcast">{document.total_chunks}</td>
-								<td className="label-2 px-lg py-md text-overcast">{formatDate(document.upload_date)}</td>
+								<td className="label-2 px-lg py-md whitespace-nowrap text-overcast">{formatFileSize(document.file_size)}</td>
+								<td className="label-2 px-lg py-md whitespace-nowrap text-overcast">{document.total_chunks}</td>
+								<td className="label-2 px-lg py-md whitespace-nowrap text-overcast">{formatDate(document.upload_date)}</td>
 								<td className="px-lg py-md">
-									<div className="flex items-center gap-md">
+									<div className="flex items-center gap-md whitespace-nowrap">
 										<Button variant="link" size="sm" onClick={() => onOpen(document, isPdf)}>
 											{isPdf ? 'Preview' : 'View'}
 										</Button>
@@ -50,7 +53,7 @@ export const DocumentTable = ({
 											<a
 												href={document.file_url || `/api/documents?id=${document.id}&file=true`}
 												download={document.file_name}
-												className="label-2-m text-success hover:underline"
+												className="label-3-m text-success hover:underline"
 												target="_blank"
 												rel="noopener noreferrer">
 												Download

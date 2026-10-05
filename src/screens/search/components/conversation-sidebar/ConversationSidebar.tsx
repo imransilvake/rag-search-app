@@ -19,11 +19,11 @@ export const ConversationSidebar = ({ conversations, activeId, isLoading, onSele
 			) : conversations.length === 0 ? (
 				<p className="label-2 p-md text-overcast">No saved chats yet. Ask a question to start one.</p>
 			) : (
-				<ul className="space-y-xs">
+				<ul className="list-none space-y-xs p-0">
 					{conversations.map((item) => {
 						const isActive = item.id === activeId;
 						return (
-							<li key={item.id} className="group relative">
+							<li key={item.id} className="group relative list-none">
 								<button
 									type="button"
 									onClick={() => onSelect(item.id)}
@@ -38,7 +38,7 @@ export const ConversationSidebar = ({ conversations, activeId, isLoading, onSele
 										event.stopPropagation();
 										onDelete(item.id);
 									}}
-									className="label-3 absolute top-sm right-sm hidden rounded-xs px-xs text-destructive group-hover:block hover:bg-accent">
+									className="label-3 absolute top-1/2 right-sm hidden -translate-y-1/2 rounded-xs px-xs text-destructive group-hover:block hover:bg-accent">
 									✕
 								</button>
 							</li>

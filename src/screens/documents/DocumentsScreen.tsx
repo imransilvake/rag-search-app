@@ -12,8 +12,8 @@ const DocumentsScreen = () => {
 	return (
 		<main className="mx-auto max-w-7xl p-xl">
 			<div className="mb-lg flex items-center justify-between gap-md">
-				<div>
-					<h1 className="text-h2 text-midnight">Documents</h1>
+				<div className="text-midnight">
+					<h1 className="text-h2">Documents</h1>
 					<p className="label-1 mt-xs text-overcast">Upload files to build your searchable knowledge base.</p>
 				</div>
 				<Button onClick={() => library.setIsUploadModalOpen(true)}>Upload Document</Button>

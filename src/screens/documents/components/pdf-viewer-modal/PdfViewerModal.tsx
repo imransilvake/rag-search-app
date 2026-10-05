@@ -13,6 +13,9 @@ const PdfViewerBody = ({ onClose, fileUrl, fileName, documentId, isPDF = true }:
 	const [isTextLoading, setIsTextLoading] = useState(false);
 	const [textError, setTextError] = useState<string | null>(null);
 
+	/** Prefer same-origin API for iframe/probe so Supabase Storage CORS cannot block preview. */
+	const previewUrl = documentId ? `/api/documents?id=${documentId}&file=true&view=true` : fileUrl;
+
 	useEffect(() => {
 		document.body.style.overflow = 'hidden';
 		return () => {
@@ -21,12 +24,12 @@ const PdfViewerBody = ({ onClose, fileUrl, fileName, documentId, isPDF = true }:
 	}, []);
 
 	useEffect(() => {
-		if (!isPDF || !fileUrl) {
+		if (!isPDF || !previewUrl) {
 			return;
 		}
 
 		let isCancelled = false;
-		fetch(fileUrl, { method: 'GET' })
+		fetch(previewUrl, { method: 'GET' })
 			.then(async (response) => {
 				const contentType = response.headers.get('content-type') ?? '';
 				if (contentType.includes('application/json')) {
@@ -45,10 +48,10 @@ const PdfViewerBody = ({ onClose, fileUrl, fileName, documentId, isPDF = true }:
 		return () => {
 			isCancelled = true;
 		};
-	}, [fileUrl, isPDF]);
+	}, [previewUrl, isPDF]);
 
 	useEffect(() => {
-		if (!documentId || activeTab !== 'content' || text || isTextLoading || textError) {
+		if (!documentId || activeTab !== 'content' || text || textError) {
 			return;
 		}
 
@@ -77,7 +80,7 @@ const PdfViewerBody = ({ onClose, fileUrl, fileName, documentId, isPDF = true }:
 		return () => {
 			isCancelled = true;
 		};
-	}, [documentId, activeTab, text, isTextLoading, textError]);
+	}, [documentId, activeTab, text, textError]);
 
 	return (
 		<ModalShell onClose={onClose} title={fileName} maxWidthClassName="max-w-6xl" contentClassName="flex h-[90vh] flex-col">
@@ -100,8 +103,8 @@ const PdfViewerBody = ({ onClose, fileUrl, fileName, documentId, isPDF = true }:
 					<div className="h-full overflow-hidden">
 						{error ? (
 							<div className="flex h-full flex-col items-center justify-center p-xl">
-								<div className="max-w-md rounded-md border border-warning/40 bg-warning/15 p-lg">
-									<h3 className="mb-sm text-h4-semibold text-warning-foreground">PDF not available</h3>
+								<div className="max-w-md rounded-md border border-warning/40 bg-warning/15 p-lg text-warning-foreground">
+									<h3 className="mb-sm text-h4-semibold">PDF not available</h3>
 									<p className="label-2 mb-md text-overcast">{error}</p>
 									{documentId && <Button onClick={() => setActiveTab('content')}>View extracted text</Button>}
 								</div>
@@ -109,7 +112,7 @@ const PdfViewerBody = ({ onClose, fileUrl, fileName, documentId, isPDF = true }:
 						) : isLoading ? (
 							<div className="label-1 flex h-full items-center justify-center text-overcast">Loading PDF…</div>
 						) : (
-							<iframe src={`${fileUrl}${fileUrl.includes('?') ? '&' : '?'}view=true#toolbar=1`} className="h-full w-full border-0" title={fileName} allow="fullscreen" />
+							<iframe src={`${previewUrl}#toolbar=1`} className="h-full w-full border-0" title={fileName} allow="fullscreen" />
 						)}
 					</div>
 				)}

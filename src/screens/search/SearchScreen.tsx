@@ -12,10 +12,12 @@ const SearchScreen = () => {
 
 	return (
 		<main className="mx-auto max-w-6xl p-xl">
-			<h1 className="mb-sm text-h2 text-midnight">RAG Search</h1>
-			<p className="label-1 mb-lg text-overcast">
-				Ask questions about your uploaded documents. Follow-ups use conversation history; the assistant can search and list your files via tools. Chats save automatically.
-			</p>
+			<div className="mb-lg text-midnight">
+				<h1 className="mb-sm text-h2">RAG Search</h1>
+				<p className="label-1 text-overcast">
+					Ask questions about your uploaded documents. Follow-ups use conversation history; the assistant can search and list your files via tools. Chats save automatically.
+				</p>
+			</div>
 
 			<div className="flex flex-col gap-lg lg:flex-row">
 				<ConversationSidebar
@@ -55,8 +57,8 @@ const SearchScreen = () => {
 					)}
 
 					{!chat.messages.length && !chat.error && chat.answer && (
-						<div className="mt-lg rounded-md border border-border bg-surface-panel p-lg shadow-sm">
-							<h2 className="mb-md text-h4-semibold text-midnight">Answer</h2>
+						<div className="mt-lg rounded-md border border-border bg-surface-panel p-lg text-midnight shadow-sm">
+							<h2 className="mb-md text-h4-semibold">Answer</h2>
 							<p className="label-1 whitespace-pre-wrap text-foreground">{chat.answer}</p>
 						</div>
 					)}

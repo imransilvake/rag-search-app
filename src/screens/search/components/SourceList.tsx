@@ -4,8 +4,8 @@ export const SourceList = ({ sources }: { sources: MatchedChunk[] }) => {
 	if (sources.length === 0) return null;
 
 	return (
-		<div className="rounded-md border border-border bg-surface-panel p-lg shadow-sm">
-			<h2 className="mb-md text-h4-semibold text-midnight">Sources ({sources.length})</h2>
+		<div className="rounded-md border border-border bg-surface-panel p-lg text-midnight shadow-sm">
+			<h2 className="mb-md text-h4-semibold">Sources ({sources.length})</h2>
 			<div className="space-y-md">
 				{sources.map((source) => (
 					<div key={source.id} className="rounded-sm border border-border bg-accent p-md">
