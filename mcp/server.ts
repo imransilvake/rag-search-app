@@ -13,7 +13,7 @@ import { z } from 'zod';
 loadEnv({ path: resolve(process.cwd(), '.env.local') });
 loadEnv({ path: resolve(process.cwd(), '.env') });
 
-async function main() {
+const main = async () => {
 	const { McpServer } = await import('@modelcontextprotocol/sdk/server/mcp.js');
 	const { StdioServerTransport } = await import('@modelcontextprotocol/sdk/server/stdio.js');
 	const { listDocuments } = await import('../src/lib/documents/repository');
@@ -100,7 +100,7 @@ async function main() {
 	const transport = new StdioServerTransport();
 	await server.connect(transport);
 	console.error('rag-search-app MCP server running on stdio');
-}
+};
 
 main().catch((error) => {
 	console.error(error);

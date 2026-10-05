@@ -1,20 +1,10 @@
 import { Button } from '@/atoms/button/Button';
-import type { DocumentSummary } from '@/lib/documents/types';
 import { formatDate } from '@/utils/format-date';
 import { formatFileSize } from '@/utils/format-file-size';
 import { formatFileType } from '@/utils/format-file-type';
+import type { IDocumentTableProps } from './types';
 
-export const DocumentTable = ({
-	documents,
-	deletingId,
-	onOpen,
-	onDelete
-}: {
-	documents: DocumentSummary[];
-	deletingId: string | null;
-	onOpen: (document: DocumentSummary, isPDF: boolean) => void;
-	onDelete: (id: string, name: string) => void;
-}) => (
+export const DocumentTable = ({ documents, deletingId, onOpen, onDelete }: IDocumentTableProps) => (
 	<div className="overflow-hidden rounded-md border border-border bg-surface-panel shadow-sm">
 		<div className="overflow-x-auto">
 			<table className="min-w-full divide-y divide-border">

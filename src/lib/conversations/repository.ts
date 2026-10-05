@@ -4,13 +4,13 @@ import { getSupabaseAnon } from '@/lib/supabase/client';
 
 const TITLE_MAX = 80;
 
-function titleFromQuery(query: string): string {
+const titleFromQuery = (query: string): string => {
 	const trimmed = query.trim().replace(/\s+/g, ' ');
 	if (trimmed.length <= TITLE_MAX) return trimmed;
 	return `${trimmed.slice(0, TITLE_MAX - 1)}…`;
-}
+};
 
-async function createConversation(title: string): Promise<ConversationSummary> {
+const createConversation = async (title: string): Promise<ConversationSummary> => {
 	const supabase = getSupabaseAnon();
 	const { data, error } = await supabase.from('conversations').insert({ title }).select('id, title, created_at, updated_at').single();
 
@@ -19,9 +19,9 @@ async function createConversation(title: string): Promise<ConversationSummary> {
 	}
 
 	return data as ConversationSummary;
-}
+};
 
-export async function listConversations(): Promise<ConversationSummary[]> {
+export const listConversations = async (): Promise<ConversationSummary[]> => {
 	const supabase = getSupabaseAnon();
 	const { data, error } = await supabase.from('conversations').select('id, title, created_at, updated_at').order('updated_at', { ascending: false });
 
@@ -30,9 +30,9 @@ export async function listConversations(): Promise<ConversationSummary[]> {
 	}
 
 	return (data ?? []) as ConversationSummary[];
-}
+};
 
-export async function getConversation(id: string): Promise<ConversationDetail> {
+export const getConversation = async (id: string): Promise<ConversationDetail> => {
 	const supabase = getSupabaseAnon();
 
 	const { data: conversation, error: conversationError } = await supabase.from('conversations').select('id, title, created_at, updated_at').eq('id', id).maybeSingle();
@@ -55,23 +55,23 @@ export async function getConversation(id: string): Promise<ConversationDetail> {
 		...(conversation as ConversationSummary),
 		messages: (messages ?? []) as ConversationMessage[]
 	};
-}
+};
 
-export async function deleteConversation(id: string): Promise<void> {
+export const deleteConversation = async (id: string): Promise<void> => {
 	const supabase = getSupabaseAnon();
 	const { error } = await supabase.from('conversations').delete().eq('id', id);
 
 	if (error) {
 		throw new Error(error.message);
 	}
-}
+};
 
-async function touchConversation(id: string): Promise<void> {
+const touchConversation = async (id: string): Promise<void> => {
 	const supabase = getSupabaseAnon();
 	await supabase.from('conversations').update({ updated_at: new Date().toISOString() }).eq('id', id);
-}
+};
 
-async function appendMessage(params: { conversationId: string; role: MessageRole; content: string; sources?: MatchedChunk[] | null }): Promise<ConversationMessage> {
+const appendMessage = async (params: { conversationId: string; role: MessageRole; content: string; sources?: MatchedChunk[] | null }): Promise<ConversationMessage> => {
 	const supabase = getSupabaseAnon();
 	const { data, error } = await supabase
 		.from('messages')
@@ -90,12 +90,12 @@ async function appendMessage(params: { conversationId: string; role: MessageRole
 
 	await touchConversation(params.conversationId);
 	return data as ConversationMessage;
-}
+};
 
 /**
  * Ensure a conversation exists, then append user + assistant turns for one search.
  */
-export async function persistSearchTurn(params: { conversationId?: string | null; query: string; answer: string; sources: MatchedChunk[] }): Promise<string> {
+export const persistSearchTurn = async (params: { conversationId?: string | null; query: string; answer: string; sources: MatchedChunk[] }): Promise<string> => {
 	const conversationId = params.conversationId?.trim() || (await createConversation(titleFromQuery(params.query))).id;
 
 	await appendMessage({
@@ -112,4 +112,4 @@ export async function persistSearchTurn(params: { conversationId?: string | null
 	});
 
 	return conversationId;
-}
+};

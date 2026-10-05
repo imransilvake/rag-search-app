@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/atoms/button/Button';
-import { DocumentTable } from '@/screens/documents/components/DocumentTable';
+import { DocumentTable } from '@/screens/documents/components/document-table/DocumentTable';
 import { PdfViewerModal } from '@/screens/documents/components/pdf-viewer-modal/PdfViewerModal';
 import { UploadModal } from '@/screens/documents/components/upload-modal/UploadModal';
 import { useDocumentsLibrary } from '@/screens/documents/hooks/useDocumentsLibrary';

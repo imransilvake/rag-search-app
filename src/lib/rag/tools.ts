@@ -47,7 +47,7 @@ export type ToolExecutionResult = {
 	sources: MatchedChunk[];
 };
 
-function formatChunksForTool(chunks: MatchedChunk[]) {
+const formatChunksForTool = (chunks: MatchedChunk[]) => {
 	return chunks.map((chunk) => ({
 		id: chunk.id,
 		similarity: chunk.similarity,
@@ -56,12 +56,12 @@ function formatChunksForTool(chunks: MatchedChunk[]) {
 		chunk_index: chunk.metadata?.chunk_index,
 		content: chunk.content
 	}));
-}
+};
 
 /**
  * Run a named RAG tool and return JSON-serializable payload + any source chunks.
  */
-export async function executeRagTool(name: string, argsJson: string): Promise<ToolExecutionResult> {
+export const executeRagTool = async (name: string, argsJson: string): Promise<ToolExecutionResult> => {
 	let args: Record<string, unknown> = {};
 	if (argsJson.trim()) {
 		try {
@@ -103,16 +103,16 @@ export async function executeRagTool(name: string, argsJson: string): Promise<To
 	}
 
 	throw new Error(`Unknown tool: ${name}`);
-}
+};
 
 /** Deduplicate chunks by id, keeping the highest similarity. */
-export function mergeSources(existing: MatchedChunk[], incoming: MatchedChunk[]): MatchedChunk[] {
+export const mergeSources = (existing: MatchedChunk[], incoming: MatchedChunk[]): MatchedChunk[] => {
 	const byId = new Map<number, MatchedChunk>();
 	for (const chunk of [...existing, ...incoming]) {
-		const prev = byId.get(chunk.id);
-		if (!prev || chunk.similarity > prev.similarity) {
+		const previous = byId.get(chunk.id);
+		if (!previous || chunk.similarity > previous.similarity) {
 			byId.set(chunk.id, chunk);
 		}
 	}
-	return Array.from(byId.values()).sort((a, b) => b.similarity - a.similarity);
-}
+	return Array.from(byId.values()).sort((left, right) => right.similarity - left.similarity);
+};

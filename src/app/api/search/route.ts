@@ -5,9 +5,9 @@ import { jsonError } from '@/lib/http';
 
 export const runtime = 'nodejs';
 
-export async function POST(req: Request) {
+export const POST = async (request: Request) => {
 	try {
-		const body = (await req.json()) as {
+		const body = (await request.json()) as {
 			query?: unknown;
 			conversationId?: unknown;
 		};
@@ -46,4 +46,4 @@ export async function POST(req: Request) {
 	} catch (error) {
 		return jsonError(error);
 	}
-}
+};

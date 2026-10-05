@@ -9,7 +9,7 @@ const SYSTEM_PROMPT = 'Summarize the document in 2-3 concise sentences. Cover th
  * One short document overview via the chat model.
  * Call after clean, before chunk — uses cleaned full text (truncated if needed).
  */
-export async function summarizeText(text: string): Promise<string> {
+export const summarizeText = async (text: string): Promise<string> => {
 	const trimmed = text.trim();
 	if (!trimmed) {
 		throw new Error('Cannot summarize empty text');
@@ -34,4 +34,4 @@ export async function summarizeText(text: string): Promise<string> {
 	}
 
 	return summary;
-}
+};

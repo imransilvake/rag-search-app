@@ -23,20 +23,20 @@ export type ChatWithDocumentsParams = {
 	history?: ChatHistoryMessage[];
 };
 
-function toOpenAIHistory(history: ChatHistoryMessage[]): ChatCompletionMessageParam[] {
+const toOpenAIHistory = (history: ChatHistoryMessage[]): ChatCompletionMessageParam[] => {
 	const recent = history.slice(-MAX_HISTORY_MESSAGES);
 	return recent
-		.filter((m) => m.content.trim())
-		.map((m) => ({
-			role: m.role,
-			content: m.content
+		.filter((message) => message.content.trim())
+		.map((message) => ({
+			role: message.role,
+			content: message.content
 		}));
-}
+};
 
 /**
  * Multi-turn chat with OpenAI tool calling over the document corpus.
  */
-export async function chatWithDocuments(params: ChatWithDocumentsParams): Promise<RagSearchResult> {
+export const chatWithDocuments = async (params: ChatWithDocumentsParams): Promise<RagSearchResult> => {
 	const trimmed = params.query.trim();
 	if (!trimmed) {
 		throw new Error('Query is required');
@@ -111,4 +111,4 @@ export async function chatWithDocuments(params: ChatWithDocumentsParams): Promis
 		answer: final.choices[0]?.message?.content?.trim() || 'No answer generated',
 		sources
 	};
-}
+};

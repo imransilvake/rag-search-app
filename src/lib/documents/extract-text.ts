@@ -1,4 +1,4 @@
-function safeDecodeURIComponent(value: string): string {
+const safeDecodeURIComponent = (value: string): string => {
 	try {
 		return decodeURIComponent(value);
 	} catch {
@@ -8,9 +8,9 @@ function safeDecodeURIComponent(value: string): string {
 			return value;
 		}
 	}
-}
+};
 
-async function extractPdfText(buffer: Buffer): Promise<string> {
+const extractPdfText = async (buffer: Buffer): Promise<string> => {
 	const PDFParser = (await import('pdf2json')).default;
 
 	return new Promise((resolve, reject) => {
@@ -46,13 +46,13 @@ async function extractPdfText(buffer: Buffer): Promise<string> {
 
 		pdfParser.parseBuffer(buffer);
 	});
-}
+};
 
 /**
  * Extract plain text from an uploaded PDF, DOCX, or TXT file.
  * Scanned image-only PDFs will return empty text (no OCR in this app).
  */
-export async function extractTextFromFile(file: File): Promise<string> {
+export const extractTextFromFile = async (file: File): Promise<string> => {
 	const buffer = Buffer.from(await file.arrayBuffer());
 	const name = file.name.toLowerCase();
 
@@ -71,4 +71,4 @@ export async function extractTextFromFile(file: File): Promise<string> {
 	}
 
 	throw new Error('Unsupported file type. Please upload PDF, DOCX, or TXT files.');
-}
+};

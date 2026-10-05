@@ -4,7 +4,7 @@ import { jsonError } from '@/lib/http';
 
 export const runtime = 'nodejs';
 
-async function handleFileResponse(documentId: string, viewInline: boolean) {
+const handleFileResponse = async (documentId: string, viewInline: boolean) => {
 	const meta = await getDocumentMetadata(documentId);
 	const fileName = meta.file_name || 'document';
 	const fileType = meta.file_type || 'application/octet-stream';
@@ -28,11 +28,11 @@ async function handleFileResponse(documentId: string, viewInline: boolean) {
 			...(viewInline && isPdf ? { 'X-Content-Type-Options': 'nosniff' } : {})
 		}
 	});
-}
+};
 
-export async function GET(req: Request) {
+export const GET = async (request: Request) => {
 	try {
-		const url = new URL(req.url);
+		const url = new URL(request.url);
 		const id = url.searchParams.get('id');
 		const wantsFile = url.searchParams.get('file') === 'true';
 		const viewInline = url.searchParams.get('view') === 'true';
@@ -53,11 +53,11 @@ export async function GET(req: Request) {
 		const status = message.includes('not found') || message.includes('not stored') ? 404 : 500;
 		return jsonError(error, status);
 	}
-}
+};
 
-export async function DELETE(req: Request) {
+export const DELETE = async (request: Request) => {
 	try {
-		const id = new URL(req.url).searchParams.get('id');
+		const id = new URL(request.url).searchParams.get('id');
 		if (!id) {
 			return NextResponse.json({ error: 'Document ID required' }, { status: 400 });
 		}
@@ -67,4 +67,4 @@ export async function DELETE(req: Request) {
 	} catch (error) {
 		return jsonError(error);
 	}
-}
+};

@@ -4,9 +4,9 @@ import { jsonError } from '@/lib/http';
 
 export const runtime = 'nodejs';
 
-export async function POST(req: Request) {
+export const POST = async (request: Request) => {
 	try {
-		const formData = await req.formData();
+		const formData = await request.formData();
 		const file = formData.get('file');
 
 		if (!(file instanceof File)) {
@@ -20,4 +20,4 @@ export async function POST(req: Request) {
 		const status = message.includes('Unsupported file') || message.includes('Could not extract') || message.includes('too large') || message.includes('File is empty') ? 400 : 500;
 		return jsonError(error, status);
 	}
-}
+};

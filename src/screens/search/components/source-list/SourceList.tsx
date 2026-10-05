@@ -1,6 +1,6 @@
-import type { MatchedChunk } from '@/lib/documents/types';
+import type { ISourceListProps } from './types';
 
-export const SourceList = ({ sources }: { sources: MatchedChunk[] }) => {
+export const SourceList = ({ sources }: ISourceListProps) => {
 	if (sources.length === 0) return null;
 
 	return (

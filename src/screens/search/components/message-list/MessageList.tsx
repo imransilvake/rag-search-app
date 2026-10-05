@@ -1,6 +1,6 @@
-import type { ConversationMessage } from '@/lib/conversations/types';
+import type { IMessageListProps } from './types';
 
-export const MessageList = ({ messages }: { messages: ConversationMessage[] }) => {
+export const MessageList = ({ messages }: IMessageListProps) => {
 	if (messages.length === 0) return null;
 
 	return (

@@ -3,8 +3,8 @@
 import { Button } from '@/atoms/button/Button';
 import { Textarea } from '@/atoms/textarea/Textarea';
 import { ConversationSidebar } from '@/screens/search/components/conversation-sidebar/ConversationSidebar';
-import { MessageList } from '@/screens/search/components/MessageList';
-import { SourceList } from '@/screens/search/components/SourceList';
+import { MessageList } from '@/screens/search/components/message-list/MessageList';
+import { SourceList } from '@/screens/search/components/source-list/SourceList';
 import { useSearchChat } from '@/screens/search/hooks/useSearchChat';
 
 const SearchScreen = () => {
