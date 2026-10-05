@@ -13,7 +13,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
 	title: 'RAG Search',
-	description: 'Portfolio-ready RAG assistant: ingest documents, semantic search with OpenAI + Supabase, multi-turn chat with sources and saved history.'
+	description: 'Ingest documents, semantic search with OpenAI + Supabase, multi-turn chat with sources and saved history.'
 };
 
 const RootLayout = ({ children }: LayoutProps<'/'>) => (

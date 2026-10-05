@@ -1,8 +1,6 @@
 # RAG Search App
 
-**A portfolio-ready RAG assistant** — full-stack GenAI you can clone, run locally, and demo in interviews.
-
-Drop in **PDF, DOCX, or TXT** → **OpenAI** embeds and indexes your content → **Supabase** holds vectors (`pgvector`) and file storage → ask questions in **multi-turn chat** with **source chunks** and **saved conversation history**. Built with **Next.js**, **TypeScript**, and a structured UI you can point to on a resume or in a system-design walkthrough.
+Upload **PDF, DOCX, or TXT** → **OpenAI** embeds and indexes your content → **Supabase** holds vectors (`pgvector`) and file storage → ask questions in **multi-turn chat** with **source chunks** and **saved conversation history**. Built with **Next.js** and **TypeScript**.
 
 <table>
   <tr>
