@@ -13,36 +13,35 @@ Expose the same `retrieveRelevantChunks` pipeline the in-app chat uses, so Curso
 
 1. App env is configured (same as [`SETUP.md`](SETUP.md)): `.env.local` with Supabase + OpenAI keys.
 2. Documents are uploaded via the app UI (or already in Supabase).
-3. Dependencies installed (`npm install`).
+3. Dependencies installed (`yarn install`).
 
 ## Run locally (smoke test)
 
 ```bash
-npm run mcp
+yarn mcp
 ```
 
 The process waits on stdin (stdio MCP). Stop with Ctrl+C. Errors log to stderr.
 
 ## Add to Cursor
 
-Project config (recommended): create or merge [`.cursor/mcp.json`](../.cursor/mcp.json).
+Project config (recommended): use [`.cursor/mcp.json`](../.cursor/mcp.json) in this repo (runs `tsx mcp/server.ts` from the workspace root).
 
-Or add under **Cursor Settings → MCP** a server:
+Or add under **Cursor Settings → MCP**:
 
 - **Name:** `rag-docs`
 - **Command:** `npx`
-- **Args:** `tsx` `mcp/server.ts`
-- **cwd:** absolute path to this repo
+- **Args:** `tsx`, `mcp/server.ts`
+- **cwd:** workspace folder (repo root)
 
-Example JSON:
+Example JSON (same as the committed project file):
 
 ```json
 {
 	"mcpServers": {
 		"rag-docs": {
 			"command": "npx",
-			"args": ["tsx", "mcp/server.ts"],
-			"cwd": "/absolute/path/to/rag-search-app"
+			"args": ["tsx", "mcp/server.ts"]
 		}
 	}
 }

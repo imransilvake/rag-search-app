@@ -27,7 +27,7 @@ From Supabase **Connect** dialog or **Settings → API Keys**:
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Publishable key (`sb_publishable_…`)                                    |
 | `SUPABASE_SECRET_KEY`                  | Secret key (`sb_secret_…`) — this replaces the old **service_role** key |
 
-Aliases still work: `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SECRET_KEY`.
+Optional env aliases: `NEXT_PUBLIC_SUPABASE_ANON_KEY` (publishable key), `SUPABASE_SERVICE_ROLE_KEY` (secret key).
 
 You do **not** need `SUPABASE_JWKS_URL` for this app.
 
@@ -54,9 +54,9 @@ yarn dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-### If you already ran the original schema
+### If chat history tables are missing
 
-Also run [`supabase/conversations.sql`](../supabase/conversations.sql) in the SQL Editor (creates `conversations` + `messages`).
+If you applied an **older** `schema.sql` (before conversations were included), run [`supabase/conversations.sql`](../supabase/conversations.sql) in the SQL Editor. Fresh installs only need `schema.sql`.
 
 ### Smoke test
 

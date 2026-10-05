@@ -1,7 +1,7 @@
 /**
  * Stdio MCP server so Cursor (and other MCP clients) can search this app's docs.
  *
- * Run: npm run mcp
+ * Run: yarn mcp
  * Configure in Cursor: see docs/MCP.md
  *
  * Logs go to stderr — stdout is reserved for MCP JSON-RPC.

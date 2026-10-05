@@ -1,9 +1,8 @@
 {
 	"mcpServers": {
 		"rag-docs": {
-			"command": "/opt/homebrew/bin/node",
-			"args": ["/Users/d506315/Development/rag-search-app/node_modules/tsx/dist/cli.mjs", "/Users/d506315/Development/rag-search-app/mcp/server.ts"],
-			"cwd": "/Users/d506315/Development/rag-search-app"
+			"command": "npx",
+			"args": ["tsx", "mcp/server.ts"]
 		}
 	}
 }

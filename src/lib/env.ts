@@ -29,8 +29,8 @@ export function getSupabaseAnonKey(): string {
 	return firstPresent('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY', 'NEXT_PUBLIC_SUPABASE_ANON_KEY');
 }
 
+/** Server secret key — `SUPABASE_SECRET_KEY` (preferred) or legacy `SUPABASE_SERVICE_ROLE_KEY`. */
 export function getSupabaseServiceRoleKey(): string {
-	// New Supabase UI: "secret key" (sb_secret_...). Older docs: service_role JWT.
 	return firstPresent('SUPABASE_SECRET_KEY', 'SUPABASE_SERVICE_ROLE_KEY');
 }
 

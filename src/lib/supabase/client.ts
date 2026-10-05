@@ -4,7 +4,7 @@ import { getSupabaseAnonKey, getSupabaseServiceRoleKey, getSupabaseUrl } from '@
 let anonClient: SupabaseClient | null = null;
 let serviceClient: SupabaseClient | null = null;
 
-/** Public client — safe for reads that rely on anon key / RLS. */
+/** Publishable key client — Postgres queries and RPC from server API routes. */
 export function getSupabaseAnon(): SupabaseClient {
 	if (!anonClient) {
 		anonClient = createClient(getSupabaseUrl(), getSupabaseAnonKey());
@@ -13,8 +13,8 @@ export function getSupabaseAnon(): SupabaseClient {
 }
 
 /**
- * Service-role client — bypasses RLS.
- * Use only in server routes for Storage upload/download/delete.
+ * Secret key client (service role) — Storage upload/delete and ingest rollback.
+ * Server-only; never expose `SUPABASE_SECRET_KEY` to the browser.
  */
 export function getSupabaseService(): SupabaseClient {
 	if (!serviceClient) {

@@ -1,5 +1,7 @@
--- Conversation history (run in Supabase SQL Editor if you already applied schema.sql)
--- Safe to re-run: uses IF NOT EXISTS.
+-- Legacy incremental script: conversations + messages only.
+-- New projects: run supabase/schema.sql once (it already includes these tables).
+-- Use this file only if you applied an older schema.sql without chat tables.
+-- Safe to re-run: IF NOT EXISTS.
 
 CREATE TABLE IF NOT EXISTS conversations (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

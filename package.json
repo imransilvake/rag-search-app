@@ -1,6 +1,7 @@
 {
 	"name": "rag-search-app",
 	"version": "0.1.0",
+	"description": "Portfolio-ready RAG app: document ingest, OpenAI embeddings, Supabase pgvector + Storage, multi-turn chat with sources and history.",
 	"private": true,
 	"scripts": {
 		"dev": "next dev",
