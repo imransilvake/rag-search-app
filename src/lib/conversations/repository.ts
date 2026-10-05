@@ -4,13 +4,13 @@ import { getSupabaseAnon } from '@/lib/supabase/client';
 
 const TITLE_MAX = 80;
 
-export function titleFromQuery(query: string): string {
+function titleFromQuery(query: string): string {
 	const trimmed = query.trim().replace(/\s+/g, ' ');
 	if (trimmed.length <= TITLE_MAX) return trimmed;
 	return `${trimmed.slice(0, TITLE_MAX - 1)}…`;
 }
 
-export async function createConversation(title: string): Promise<ConversationSummary> {
+async function createConversation(title: string): Promise<ConversationSummary> {
 	const supabase = getSupabaseAnon();
 	const { data, error } = await supabase.from('conversations').insert({ title }).select('id, title, created_at, updated_at').single();
 
@@ -71,7 +71,7 @@ async function touchConversation(id: string): Promise<void> {
 	await supabase.from('conversations').update({ updated_at: new Date().toISOString() }).eq('id', id);
 }
 
-export async function appendMessage(params: { conversationId: string; role: MessageRole; content: string; sources?: MatchedChunk[] | null }): Promise<ConversationMessage> {
+async function appendMessage(params: { conversationId: string; role: MessageRole; content: string; sources?: MatchedChunk[] | null }): Promise<ConversationMessage> {
 	const supabase = getSupabaseAnon();
 	const { data, error } = await supabase
 		.from('messages')

@@ -8,5 +8,3 @@ export interface IButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 	size?: NonNullable<VariantProps<typeof buttonVariants>['size']>;
 	isFullWidth?: boolean;
 }
-
-export type IButtonStylesProps = VariantProps<typeof buttonVariants>;

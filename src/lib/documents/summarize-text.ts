@@ -1,7 +1,7 @@
 import { CHAT_MODEL, getOpenAI } from '@/lib/openai/client';
 
 /** Cap input so huge PDFs don't blow the chat context window. */
-export const SUMMARY_MAX_CHARS = 12_000;
+const SUMMARY_MAX_CHARS = 12_000;
 
 const SYSTEM_PROMPT = 'Summarize the document in 2-3 concise sentences. Cover the main topic and key points. No preamble.';
 

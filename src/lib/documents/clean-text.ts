@@ -1,20 +1,7 @@
-/**
- * CLEAN phase — normalize extracted text before chunk → embed.
- * Deterministic, no LLM. Multi-page header/footer removal needs per-page
- * extract (not available yet); keep helpers ready for that later.
- */
-
-export interface CleanOptions {
-	/** Redact emails/phones/SSN-like patterns. Off by default (irreversible). */
-	scrubPii?: boolean;
-}
-
-export interface CleanResult {
-	text: string;
-}
+/** Normalize extracted text before chunk → embed (deterministic, no LLM). */
 
 /** Unicode normalize, fix PDF hyphen breaks, collapse whitespace, drop controls. */
-export function normalizeText(text: string): string {
+function normalizeText(text: string): string {
 	let out = text.normalize('NFKC');
 
 	// "informa-\ntion" → "information" (common PDF extraction artifact)
@@ -33,7 +20,7 @@ export function normalizeText(text: string): string {
  * Drop separator / page-number-only lines.
  * Avoids aggressive "length < 3" filters that remove real short tokens.
  */
-export function stripBoilerplate(text: string): string {
+function stripBoilerplate(text: string): string {
 	const lines = text.split('\n');
 	const cleaned: string[] = [];
 
@@ -54,22 +41,10 @@ export function stripBoilerplate(text: string): string {
 	return cleaned.join('\n');
 }
 
-/** Basic regex PII placeholders (optional). */
-export function scrubPII(text: string): string {
-	let out = text.replace(/[\w.+-]+@[\w-]+\.[\w.-]+/g, '[EMAIL]');
-	out = out.replace(/\b\d{3}[-.\s]?\d{3}[-.\s]?\d{4}\b/g, '[PHONE]');
-	out = out.replace(/\b\d{3}-\d{2}-\d{4}\b/g, '[SSN]');
-	return out;
-}
-
 /** Run clean on a single extracted text blob. */
-export function cleanDocument(rawText: string, opts: CleanOptions = {}): CleanResult {
+export function cleanDocument(rawText: string): { text: string } {
 	let text = normalizeText(rawText);
 	text = stripBoilerplate(text);
-
-	if (opts.scrubPii) {
-		text = scrubPII(text);
-	}
 
 	// Collapse blank lines again after boilerplate removals
 	text = text.replace(/\n{3,}/g, '\n\n').trim();

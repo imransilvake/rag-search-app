@@ -23,7 +23,6 @@ const fetchConversationList = async (): Promise<ConversationSummary[]> => {
 
 export const useSearchChat = () => {
 	const [query, setQuery] = useState('');
-	const [answer, setAnswer] = useState('');
 	const [error, setError] = useState<string | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
 	const [sources, setSources] = useState<MatchedChunk[]>([]);
@@ -63,7 +62,6 @@ export const useSearchChat = () => {
 		setActiveConversationId(null);
 		setMessages([]);
 		setQuery('');
-		setAnswer('');
 		setError(null);
 		setSources([]);
 	};
@@ -82,8 +80,6 @@ export const useSearchChat = () => {
 			setActiveConversationId(data.id);
 			setMessages(nextMessages);
 			setQuery('');
-			const lastAssistant = [...nextMessages].reverse().find((message) => message.role === 'assistant');
-			setAnswer(lastAssistant?.content || '');
 			setSources(lastAssistantSources(nextMessages));
 		} catch (loadError) {
 			setError(loadError instanceof Error ? loadError.message : 'Failed to load');
@@ -123,7 +119,6 @@ export const useSearchChat = () => {
 				setError(data.error);
 				return;
 			}
-			setAnswer(data.answer || 'No answer generated');
 			setSources(data.sources || []);
 			if (typeof data.conversationId === 'string') setActiveConversationId(data.conversationId);
 			setQuery('');
@@ -147,7 +142,6 @@ export const useSearchChat = () => {
 	return {
 		query,
 		setQuery,
-		answer,
 		error,
 		isLoading,
 		sources,

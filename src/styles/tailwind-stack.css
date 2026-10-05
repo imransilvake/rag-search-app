@@ -462,26 +462,6 @@
  * but use this for styles that are impossible to represent with utilities alone.
  */
 @layer components {
-	/**
-	 * Sonner Toast Library Styles
-	 *
-	 * Ensures toast notifications use our semantic z-index token.
-	 * Applied to: Sonner Toaster component
-	 * @see @/atoms/toast/Toast.tsx
-	 */
-	[data-sonner-toaster] {
-		z-index: var(--z-index-toast);
-	}
-
-	/**
-	 * Page Container
-	 *
-	 * A container for the page content.
-	 * Applied to: Page content container
-	 */
-	.page-container {
-		@apply mx-auto w-full max-w-225 px-md md:px-lg; /* w-225 = 900px */
-	}
 }
 
 ::selection {

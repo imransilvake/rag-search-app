@@ -4,6 +4,17 @@
 
 Drop in **PDF, DOCX, or TXT** → **OpenAI** embeds and indexes your content → **Supabase** holds vectors (`pgvector`) and file storage → ask questions in **multi-turn chat** with **source chunks** and **saved conversation history**. Built with **Next.js**, **TypeScript**, and a structured UI you can point to on a resume or in a system-design walkthrough.
 
+<table>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/01-search-chat.png" alt="Multi-turn RAG chat with saved history" /></td>
+    <td width="50%"><img src="docs/screenshots/02-search-sources.png" alt="Cited source chunks with similarity scores" /></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/03-documents.png" alt="Documents library with upload and chunk counts" /></td>
+    <td width="50%"><img src="docs/screenshots/04-document-viewer.png" alt="In-app document preview modal" /></td>
+  </tr>
+</table>
+
 ## Prerequisites
 
 - **Node.js 18+**
