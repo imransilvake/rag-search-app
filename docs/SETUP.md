@@ -62,6 +62,10 @@ If you applied an **older** `schema.sql` (before conversations were included), r
 
 If you applied an older schema (chunks-only, no library index), run [`supabase/library-files.sql`](../supabase/library-files.sql). It creates `library_files` and backfills rows from existing chunk metadata. Fresh installs get this table from `schema.sql`.
 
+### If search returns no sources (but Documents still show content)
+
+Older schemas used an `ivfflat` index that can return **zero** rows on small corpora. The app falls back to exact similarity automatically; optionally run [`supabase/fix-vector-index.sql`](../supabase/fix-vector-index.sql) once to switch to `hnsw` for faster RPC matches.
+
 ### Smoke test
 
 1. Go to **Documents** → upload a small `.txt` file (max **10 MB**; `.pdf`, `.docx`, or `.txt`).
@@ -74,15 +78,15 @@ If you applied an older schema (chunks-only, no library index), run [`supabase/l
 
 ## Common failures
 
-| Symptom                            | Likely cause                                                                                  |
-| ---------------------------------- | --------------------------------------------------------------------------------------------- |
-| Storage RLS error on upload        | Missing / wrong `SUPABASE_SECRET_KEY`                                                         |
-| Env / missing key errors           | Incomplete `.env.local` — restart `yarn dev` after edits                                      |
-| Empty PDF text                     | Scanned/image PDF (no extractable text) — try `.txt` first                                    |
-| File too large / unsupported       | Max 10 MB; only `.pdf`, `.docx`, `.txt`                                                       |
-| Documents list empty after upgrade | Run [`library-files.sql`](../supabase/library-files.sql) to create/backfill `library_files`   |
-| `match_documents` errors           | Schema SQL not applied, or `vector` extension missing                                         |
-| Index creation fails on empty DB   | Rare with `pgvector`; if `ivfflat` index errors, create it after your first successful upload |
+| Symptom                            | Likely cause                                                                                                  |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Storage RLS error on upload        | Missing / wrong `SUPABASE_SECRET_KEY`                                                                         |
+| Env / missing key errors           | Incomplete `.env.local` — restart `yarn dev` after edits                                                      |
+| Empty PDF text                     | Scanned/image PDF (no extractable text) — try `.txt` first                                                    |
+| File too large / unsupported       | Max 10 MB; only `.pdf`, `.docx`, `.txt`                                                                       |
+| Documents list empty after upgrade | Run [`library-files.sql`](../supabase/library-files.sql) to create/backfill `library_files`                   |
+| Search finds no chunks / empty RAG | Old `ivfflat` index — app uses exact fallback; run [`fix-vector-index.sql`](../supabase/fix-vector-index.sql) |
+| `match_documents` errors           | Schema SQL not applied, or `vector` extension missing                                                         |
 
 ## Cost note
 

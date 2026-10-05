@@ -32,11 +32,11 @@ CREATE TABLE IF NOT EXISTS documents (
   file_url TEXT NULL
 );
 
--- Speeds up cosine similarity queries
-CREATE INDEX IF NOT EXISTS documents_embedding_ivfflat_idx
+-- Speeds up cosine similarity queries (HNSW works for small and large corpora;
+-- IVFFlat with lists=100 on tiny tables can return zero rows).
+CREATE INDEX IF NOT EXISTS documents_embedding_hnsw_idx
   ON documents
-  USING ivfflat (embedding vector_cosine_ops)
-  WITH (lists = 100);
+  USING hnsw (embedding vector_cosine_ops);
 
 -- Find chunks most similar to a query embedding
 -- match_threshold defaults to 0 in app code so small corpora still return hits.
@@ -59,9 +59,10 @@ BEGIN
     documents.id,
     documents.content,
     documents.metadata,
-    1 - (documents.embedding <=> query_embedding) AS similarity
+    (1 - (documents.embedding <=> query_embedding))::float AS similarity
   FROM documents
-  WHERE 1 - (documents.embedding <=> query_embedding) > match_threshold
+  WHERE documents.embedding IS NOT NULL
+    AND 1 - (documents.embedding <=> query_embedding) > match_threshold
   ORDER BY documents.embedding <=> query_embedding
   LIMIT match_count;
 END;

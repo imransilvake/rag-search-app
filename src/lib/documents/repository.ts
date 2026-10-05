@@ -93,18 +93,90 @@ export const insertLibraryFile = async (row: LibraryFileRow): Promise<void> => {
 };
 
 export const matchDocuments = async (params: { queryEmbedding: number[]; matchThreshold?: number; matchCount?: number }): Promise<MatchedChunk[]> => {
+	const matchThreshold = params.matchThreshold ?? 0;
+	const matchCount = params.matchCount ?? 5;
 	const supabase = getSupabaseAnon();
+
+	// Prefer server RPC (uses vector index when healthy).
 	const { data, error } = await supabase.rpc('match_documents', {
-		query_embedding: JSON.stringify(params.queryEmbedding),
-		match_threshold: params.matchThreshold ?? 0,
-		match_count: params.matchCount ?? 5
+		query_embedding: params.queryEmbedding,
+		match_threshold: matchThreshold,
+		match_count: matchCount
 	});
+
+	if (!error && data?.length) {
+		return data as MatchedChunk[];
+	}
+
+	// IVFFlat with lists >> row count returns zero rows; fall back to exact cosine in app.
+	if (error) {
+		console.error('match_documents RPC failed; using exact similarity fallback:', error.message);
+	}
+
+	return matchDocumentsExact({
+		queryEmbedding: params.queryEmbedding,
+		matchThreshold,
+		matchCount
+	});
+};
+
+const parseEmbedding = (value: unknown): number[] | null => {
+	if (Array.isArray(value) && value.every((item) => typeof item === 'number')) {
+		return value;
+	}
+	if (typeof value === 'string') {
+		try {
+			const parsed: unknown = JSON.parse(value);
+			if (Array.isArray(parsed) && parsed.every((item) => typeof item === 'number')) {
+				return parsed;
+			}
+		} catch {
+			return null;
+		}
+	}
+	return null;
+};
+
+/** Cosine similarity for OpenAI embeddings (unit-normalized → same ranking as pgvector cosine ops). */
+const cosineSimilarity = (left: number[], right: number[]): number => {
+	const length = Math.min(left.length, right.length);
+	let dot = 0;
+	let leftNorm = 0;
+	let rightNorm = 0;
+	for (let index = 0; index < length; index++) {
+		dot += left[index] * right[index];
+		leftNorm += left[index] * left[index];
+		rightNorm += right[index] * right[index];
+	}
+	const denominator = Math.sqrt(leftNorm) * Math.sqrt(rightNorm);
+	return denominator === 0 ? 0 : dot / denominator;
+};
+
+const matchDocumentsExact = async (params: { queryEmbedding: number[]; matchThreshold: number; matchCount: number }): Promise<MatchedChunk[]> => {
+	const supabase = getSupabaseAnon();
+	const { data, error } = await supabase.from('documents').select('id, content, metadata, embedding');
 
 	if (error) {
 		throw new Error(error.message);
 	}
 
-	return (data ?? []) as MatchedChunk[];
+	const ranked: MatchedChunk[] = [];
+	for (const row of data ?? []) {
+		const embedding = parseEmbedding(row.embedding);
+		if (!embedding || embedding.length !== params.queryEmbedding.length) continue;
+
+		const similarity = cosineSimilarity(params.queryEmbedding, embedding);
+		if (similarity <= params.matchThreshold) continue;
+
+		ranked.push({
+			id: row.id as number,
+			content: row.content as string,
+			metadata: row.metadata as DocumentMetadata | null,
+			similarity
+		});
+	}
+
+	return ranked.sort((left, right) => right.similarity - left.similarity).slice(0, params.matchCount);
 };
 
 export const listDocuments = async (): Promise<DocumentSummary[]> => {
