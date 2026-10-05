@@ -290,11 +290,10 @@
 	body {
 		@apply bg-background font-inter text-foreground antialiased;
 	}
+	/* App chrome lists are custom — don't force browser discs/decimals (breaks sidebars). */
+	ul,
 	ol {
-		@apply list-inside list-decimal;
-	}
-	ul {
-		@apply list-inside list-disc;
+		@apply list-none;
 	}
 	a[href^='http'] {
 		@apply text-primary;
