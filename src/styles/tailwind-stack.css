@@ -1,0 +1,490 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:is(.dark *));
+
+/**
+ * @theme inline
+ *
+ * This directive replaces the traditional `tailwind.config.js` `theme` object.
+ * It explicitly tells Tailwind to treat the CSS variables defined inside as
+ * configuration values.
+ *
+ * - Any variable defined here becomes a utility class (e.g., --color-primary -> bg-primary).
+ * - It allows you to define your design tokens (colors, fonts, spacing) directly in CSS.
+ */
+@theme inline {
+	/* next/font sets --font-inter-family on <html> */
+	--font-sans: var(--font-inter-family), ui-sans-serif, system-ui, sans-serif;
+	--font-inter: var(--font-inter-family), ui-sans-serif, system-ui, sans-serif;
+
+	/**
+	 * CSS Variable to Tailwind Class Mapping
+	 *
+	 * All CSS variables are automatically mapped to Tailwind utility classes via @theme inline.
+	 *
+	 * Examples:
+	 * --color-background   → bg-background, text-background, border-background
+	 * --color-primary      → bg-primary, text-primary, border-primary
+	 * --color-muted        → bg-muted, text-muted, border-muted
+	 * --color-warning      → bg-warning, text-warning, border-warning
+	 * --color-success      → bg-success, text-success, border-success
+	 */
+	--color-background: var(--background);
+	--color-foreground: var(--foreground);
+	--color-surface-panel: var(--surface-panel);
+	--color-surface-fog: var(--surface-fog);
+	--color-surface-frost: var(--surface-frost);
+	--color-midnight: var(--midnight);
+	--color-overcast: var(--overcast);
+	--color-primary: var(--primary);
+	--color-primary-hover: var(--primary-hover);
+	--color-primary-active: var(--primary-active);
+	--color-primary-foreground: var(--primary-foreground);
+	--color-secondary: var(--secondary);
+	--color-secondary-hover: var(--secondary-hover);
+	--color-secondary-active: var(--secondary-active);
+	--color-secondary-foreground: var(--secondary-foreground);
+	--color-muted: var(--muted);
+	--color-muted-foreground: var(--muted-foreground);
+	--color-accent: var(--accent);
+	--color-accent-active: var(--accent-active);
+	--color-accent-foreground: var(--accent-foreground);
+	--color-destructive: var(--destructive);
+	--color-destructive-foreground: var(--destructive-foreground);
+	--color-warning: var(--warning);
+	--color-warning-foreground: var(--warning-foreground);
+	--color-success: var(--success);
+	--color-success-foreground: var(--success-foreground);
+	--color-border: var(--border);
+	--color-input: var(--input);
+	--color-ring: var(--ring);
+
+	/* Radius
+	 *
+	 * CSS Variable Key     Tailwind "Helper" Prefix        Resulting Classes
+	 * --radius-none        rounded-                        rounded-none
+	 * --radius-xs          rounded-                        rounded-xs
+	 * --radius-sm          rounded-                        rounded-sm
+	 * --radius-md          rounded-                        rounded-md (base)
+	 * --radius-lg          rounded-                        rounded-lg
+	 * --radius-xl          rounded-                        rounded-xl
+	 * --radius-full        rounded-                        rounded-full
+	 */
+
+	--radius-none: 0;
+	--radius-xs: 0.25rem; /* 4px */
+	--radius-sm: 0.5rem; /* 8px */
+	--radius-md: var(--radius); /* 12px - Base */
+	--radius-lg: 1rem; /* 16px */
+	--radius-xl: 1.5rem; /* 24px */
+	--radius-full: 62.4375rem; /* 999px */
+
+	/**
+	 * Spacing System
+	 *
+	 * Designer's Value     Tailwind Class (Padding)    Tailwind Class (Margin)     Tailwind Class (Gap)
+	 * 0 (0px)              p-0                         m-0                         gap-0
+	 * XXS (2px)            p-xxs                       m-xxs                       gap-xxs
+	 * XS (4px)             p-xs                        m-xs                        gap-xs
+	 * SM (8px)             p-sm                        m-sm                        gap-sm
+	 * MD (16px)            p-md                        m-md                        gap-md
+	 * LG (24px)            p-lg                        m-lg                        gap-lg
+	 * XL (32px)            p-xl                        m-xl                        gap-xl
+	 * 2XL (48px)           p-2xl                       m-2xl                       gap-2xl
+	 * 3XL (64px)           p-3xl                       m-3xl                       gap-3xl
+	 */
+	--spacing-0: 0; /* 0px */
+	--spacing-xxs: 0.125rem; /* 2px */
+	--spacing-xs: 0.25rem; /* 4px */
+	--spacing-sm: 0.5rem; /* 8px */
+	--spacing-md: 1rem; /* 16px */
+	--spacing-lg: 1.5rem; /* 24px */
+	--spacing-xl: 2rem; /* 32px */
+	--spacing-2xl: 3rem; /* 48px */
+	--spacing-3xl: 4rem; /* 64px */
+
+	/**
+	 * Max-width container scale
+	 *
+	 * Named --spacing-* tokens (sm…3xl) win over --container-* for max-w-* in
+	 * Tailwind v4. Restore the intended container widths via --max-width-*.
+	 *
+	 * CSS Variable Key       Tailwind Class    Value
+	 * --max-width-sm         max-w-sm          24rem (384px)
+	 * --max-width-md         max-w-md          28rem (448px)
+	 * --max-width-lg         max-w-lg          32rem (512px)
+	 * --max-width-xl         max-w-xl          36rem (576px)
+	 * --max-width-2xl        max-w-2xl         42rem (672px)
+	 * --max-width-3xl        max-w-3xl         48rem (768px)
+	 * --max-width-4xl        max-w-4xl         56rem (896px)
+	 * --max-width-5xl        max-w-5xl         64rem (1024px)
+	 * --max-width-6xl        max-w-6xl         72rem (1152px)
+	 * --max-width-7xl        max-w-7xl         80rem (1280px)
+	 */
+	--max-width-sm: 24rem;
+	--max-width-md: 28rem;
+	--max-width-lg: 32rem;
+	--max-width-xl: 36rem;
+	--max-width-2xl: 42rem;
+	--max-width-3xl: 48rem;
+	--max-width-4xl: 56rem;
+	--max-width-5xl: 64rem;
+	--max-width-6xl: 72rem;
+	--max-width-7xl: 80rem;
+
+	/* Shadows
+	 * CSS Variable Key     Tailwind Class              Value
+	 * --shadow-sm          shadow-sm                   Small elevation
+	 * --shadow-md          shadow-md                   Medium elevation
+	 * --shadow-lg          shadow-lg                   Large elevation
+	 * --shadow-xl          shadow-xl                   Extra large
+	 * --shadow-200         shadow-200                  Shadow 200
+	 */
+	--shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+	--shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+	--shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+	--shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+	--shadow-200: 0 10px 32px 4px rgba(0, 0, 0, 0.1);
+
+	/* Z-Index
+	 * Uses consistent step-based scale for predictable layering.
+	 * Smaller increments make it easy to insert new layers if needed.
+	 *
+	 * Hierarchy (bottom to top):
+	 * -1: below     - Behind normal flow
+	 *  0: base      - Normal flow (default)
+	 *  1: surface   - Elevated surfaces, handles
+	 * 10: header    - Fixed/sticky headers
+	 * 20: dropdown  - Dropdowns, popovers, tooltips
+	 * 30: overlay   - Modal backdrops
+	 * 35: dropzone  - Full-screen file drop (above overlay, below modal)
+	 * 40: modal     - Modal content
+	 * 50: toast     - Toast notifications (always on top)
+	 */
+	--z-index-below: -1;
+	--z-index-base: 0;
+	--z-index-surface: 1;
+	--z-index-header: 10;
+	--z-index-dropdown: 20;
+	--z-index-overlay: 30;
+	--z-index-dropzone: 35;
+	--z-index-modal: 40;
+	--z-index-toast: 50;
+
+	/* Headings (Inter) */
+	--text-h1: clamp(1.75rem, 4.5vw, 2.5rem); /* 28–40px — about headline */
+	--text-h1--line-height: 1.25;
+	--text-h1--font-weight: 700;
+	--text-h1--letter-spacing: -0.02em;
+	--text-h1-bold: clamp(2rem, 6vw, 3rem); /* 32–48px — large display headings */
+	--text-h1-bold--line-height: 1.1;
+	--text-h1-bold--font-weight: 700;
+	--text-h1-bold--letter-spacing: -0.04em;
+
+	--text-h2: clamp(1.5rem, 3.5vw, 1.875rem); /* 24–30px — section titles bold, logo */
+	--text-h2--line-height: 1.3;
+	--text-h2--font-weight: 700;
+	--text-h2--letter-spacing: -0.02em;
+	--text-h2-bold: clamp(1.5rem, 3.5vw, 1.875rem); /* 24–30px — section titles semibold */
+	--text-h2-bold--line-height: 1.3;
+	--text-h2-bold--font-weight: 600;
+	--text-h2-bold--letter-spacing: -0.02em;
+
+	--text-h3: 1.5rem; /* 24px */
+	--text-h3--line-height: 1.25;
+	--text-h3--font-weight: 500;
+	--text-h3-bold: 1.5rem;
+	--text-h3-bold--line-height: 1.25;
+	--text-h3-bold--font-weight: 600;
+
+	--text-h4: 1.25rem; /* 20px */
+	--text-h4--line-height: 1.2;
+	--text-h4--font-weight: 500;
+	--text-h4-semibold: 1.25rem;
+	--text-h4-semibold--line-height: 1.2;
+	--text-h4-semibold--font-weight: 600;
+
+	--text-h5: 1.125rem; /* 18px — lead/intro copy */
+	--text-h5--line-height: 1.7;
+	--text-h5--font-weight: 400;
+	--text-h5-medium: 1.125rem;
+	--text-h5-medium--line-height: 1.7;
+	--text-h5-medium--font-weight: 500;
+	--text-h5-bold: 1.125rem;
+	--text-h5-bold--line-height: 1.7;
+	--text-h5-bold--font-weight: 600;
+	--text-h5-italic: 1.125rem;
+	--text-h5-italic--line-height: 1.7;
+	--text-h5-italic--font-weight: 400;
+
+	/* UI Controls & Labels (Inter) */
+	--text-l1: 1rem; /* 16px */
+	--text-l1--line-height: 1.5;
+	--text-l1--font-weight: 400;
+	--text-l1-medium: 1rem;
+	--text-l1-medium--line-height: 1.5;
+	--text-l1-medium--font-weight: 500;
+	--text-l1-semibold: 1rem;
+	--text-l1-semibold--line-height: 1.5;
+	--text-l1-semibold--font-weight: 600;
+
+	--text-l2: 0.875rem; /* 14px */
+	--text-l2--line-height: 1.5;
+	--text-l2--font-weight: 400;
+	--text-l2-medium: 0.875rem;
+	--text-l2-medium--line-height: 1.5;
+	--text-l2-medium--font-weight: 500;
+	--text-l2-semibold: 0.875rem;
+	--text-l2-semibold--line-height: 1.5;
+	--text-l2-semibold--font-weight: 600;
+
+	--text-l3: 0.75rem; /* 12px */
+	--text-l3--line-height: 1.3;
+	--text-l3--font-weight: 400;
+	--text-l3-medium: 0.75rem;
+	--text-l3-medium--line-height: 1.3;
+	--text-l3-medium--font-weight: 500;
+	--text-l3-semibold: 0.75rem;
+	--text-l3-semibold--line-height: 1.3;
+	--text-l3-semibold--font-weight: 600;
+
+	--text-l4: 0.6875rem; /* 11px */
+	--text-l4--line-height: 1.5;
+	--text-l4--font-weight: 500;
+	--text-l4--letter-spacing: 0.03em; /* 3% */
+
+	--text-l5: 0.625rem; /* 10px */
+	--text-l5--line-height: 1.5;
+	--text-l5--font-weight: 500;
+	--text-l5--letter-spacing: 0.03em; /* 3% */
+	--text-l5-medium: 0.625rem; /* 10px */
+	--text-l5-medium--line-height: 1.5;
+	--text-l5-medium--font-weight: 500;
+	--text-l5-medium--letter-spacing: 0.03em; /* 3% */
+}
+
+/**
+ * @layer base
+ * Purpose: Global Resets & Element Defaults
+ *
+ * This layer is for setting the default appearance of bare HTML elements (h1, p, body).
+ *
+ * - Low Specificity: Styles here are applied *before* utility classes. This ensures that
+ * if you add `class="text-red-500"` to an <h1>, the utility will correctly override
+ * the base style defined here.
+ * - Workarounds: We also use this layer to apply complex font rules (italic/family)
+ * that strictly require standard CSS syntax.
+ */
+@layer base {
+	/**
+	 * The global outline-ring is just a safety net for unfocused elements or non-interactive
+	 * elements. Your interactive components override this with their own intentional, keyboard-only
+	 * focus rings for better UX and accessibility.
+	 */
+	* {
+		@apply border-border outline-ring focus-visible:outline-1;
+	}
+	html {
+		@apply overscroll-none;
+	}
+	body {
+		@apply bg-background font-inter text-foreground antialiased;
+	}
+	ol {
+		@apply list-inside list-decimal;
+	}
+	ul {
+		@apply list-inside list-disc;
+	}
+	a[href^='http'] {
+		@apply text-primary;
+	}
+	code,
+	kbd,
+	samp,
+	pre {
+		@apply font-inter whitespace-pre-wrap text-inherit;
+	}
+
+	p {
+		@apply text-l1;
+	}
+
+	h1 {
+		@apply text-h1-bold;
+	}
+	h2 {
+		@apply text-h2-bold;
+	}
+	h3 {
+		@apply text-h3-bold;
+	}
+	h4 {
+		@apply text-h4-semibold;
+	}
+	h5 {
+		@apply text-h5-bold;
+	}
+	.h1 {
+		@apply text-h1;
+	}
+	.h2 {
+		@apply text-h2;
+	}
+	.h3 {
+		@apply text-h3;
+	}
+	.h4 {
+		@apply text-h4;
+	}
+	.h4-sb {
+		@apply text-h4-semibold;
+	}
+	.h5 {
+		@apply text-h5;
+	}
+	.h5-medium {
+		@apply text-h5-medium;
+	}
+	.h5-italic {
+		@apply text-h5-italic;
+	}
+
+	.label-1 {
+		@apply text-l1;
+	}
+	.label-1-m {
+		@apply text-l1-medium;
+	}
+	.label-1-sb {
+		@apply text-l1-semibold;
+	}
+	.label-2 {
+		@apply text-l2;
+	}
+	.label-2-m {
+		@apply text-l2-medium;
+	}
+	.label-2-sb {
+		@apply text-l2-semibold;
+	}
+	.label-3 {
+		@apply text-l3;
+	}
+	.label-3-m {
+		@apply text-l3-medium;
+	}
+	.label-3-sb {
+		@apply text-l3-semibold;
+	}
+	.label-4 {
+		@apply text-l4;
+	}
+	.label-5 {
+		@apply text-l5;
+	}
+	.label-5-medium {
+		@apply text-l5-medium;
+	}
+
+	/**
+	 * Italic Typography Classes
+	 *
+	 * Note: Tailwind v4's @theme inline directive doesn't support the --*--font-style modifier syntax.
+	 * The italic classes get font-size, line-height, and font-weight from CSS variables,
+	 * but font-style: italic must be applied explicitly via CSS rules.
+	 */
+	.text-h5-italic,
+	.h5-italic {
+		font-style: italic;
+	}
+
+	/**
+	 * Typography Classes - Inter Font
+	 *
+	 * Note: Tailwind v4's @theme inline directive doesn't support the --*--font-family modifier syntax.
+	 * Label classes get font-size, line-height, and font-weight from CSS variables,
+	 * but font-family must be applied explicitly via CSS rules.
+	 *
+	 * While the page body uses Inter through font-inter,
+	 * these rules ensure utility classes also use Inter
+	 * when applied to other elements like <div> or <p>.
+	 */
+	.text-h1,
+	.text-h1-bold,
+	.text-h2,
+	.text-h2-bold,
+	.text-h3,
+	.text-h3-bold,
+	.text-h4,
+	.text-h4-semibold,
+	.text-h5,
+	.text-h5-medium,
+	.text-h5-bold,
+	.text-h5-italic,
+	.text-l1,
+	.text-l1-medium,
+	.text-l1-semibold,
+	.text-l2,
+	.text-l2-medium,
+	.text-l2-semibold,
+	.text-l3,
+	.text-l3-medium,
+	.text-l3-semibold,
+	.text-l4,
+	.text-l5,
+	.text-l5-medium,
+	.label-1,
+	.label-1-m,
+	.label-1-sb,
+	.label-2,
+	.label-2-m,
+	.label-2-sb,
+	.label-3,
+	.label-3-m,
+	.label-3-sb,
+	.label-4,
+	.label-5,
+	.label-5-medium {
+		@apply font-inter;
+	}
+}
+
+/**
+ * @layer components
+ * Purpose: Complex Classes & Third-Party Overrides
+ *
+ * This layer is for abstracting patterns into reusable classes (like .btn, .card)
+ * or overriding styles for external libraries (like React-Mentions or Sonner).
+ *
+ * - Hierarchy: These styles sit *between* `base` styles and utility classes.
+ * Base < Components < Utilities
+ * - Usage: Use this sparingly. Prefer utility classes in HTML where possible,
+ * but use this for styles that are impossible to represent with utilities alone.
+ */
+@layer components {
+	/**
+	 * Sonner Toast Library Styles
+	 *
+	 * Ensures toast notifications use our semantic z-index token.
+	 * Applied to: Sonner Toaster component
+	 * @see @/atoms/toast/Toast.tsx
+	 */
+	[data-sonner-toaster] {
+		z-index: var(--z-index-toast);
+	}
+
+	/**
+	 * Page Container
+	 *
+	 * A container for the page content.
+	 * Applied to: Page content container
+	 */
+	.page-container {
+		@apply mx-auto w-full max-w-225 px-md md:px-lg; /* w-225 = 900px */
+	}
+}
+
+::selection {
+	@apply bg-secondary-hover;
+}

@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# RAG Search App
 
-## Getting Started
+Local learning project: upload PDF / DOCX / TXT files, embed chunks with OpenAI, store them in Supabase (`pgvector`), and ask questions with RAG.
 
-First, run the development server:
+Based on the [FreeCodeCamp RAG tutorial](https://www.freecodecamp.org/news/how-to-build-an-ai-powered-rag-search-application-with-nextjs-supabase-and-openai/), restructured for maintainability (thin routes, typed domain modules, atoms/elements/screens UI).
+
+## Quick start
+
+1. **Configure cloud services** — follow [`docs/SETUP.md`](docs/SETUP.md) (Supabase SQL + Storage bucket).
+2. **Add keys last** (before testing):
+
+    ```bash
+    cp .env.example .env.local
+    # edit .env.local with your Supabase + OpenAI values
+    ```
+
+3. **Run locally:**
+
+    ```bash
+    yarn install
+    yarn dev
+    ```
+
+4. Open [http://localhost:3000](http://localhost:3000) → **Documents** → upload a small `.txt` → **Search**.
+
+## Docs
+
+| Doc                                                          | Contents                                                  |
+| ------------------------------------------------------------ | --------------------------------------------------------- |
+| [`docs/SETUP.md`](docs/SETUP.md)                             | Accounts, SQL, Storage, env vars, smoke test              |
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)               | Module layout and RAG data flow                           |
+| [`docs/directory-structure.md`](docs/directory-structure.md) | Folder layout (app / screens / atoms)                     |
+| [`docs/MCP.md`](docs/MCP.md)                                 | Cursor MCP server (`search_documents` / `list_documents`) |
+| [`supabase/schema.sql`](supabase/schema.sql)                 | Tables, index, `match_documents` RPC                      |
+
+## Scripts
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+yarn dev         # local Next.js server
+yarn build       # production build
+yarn lint        # ESLint
+yarn lint:fix    # ESLint --fix
+yarn format      # Prettier check
+yarn format:fix  # Prettier write
+yarn scan        # format:fix + lint:fix + tsc --noEmit
+yarn mcp         # stdio MCP server for Cursor (see docs/MCP.md)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Stack
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Next.js (App Router) + TypeScript + Tailwind + tailwind-variants
+- Supabase (Postgres + `pgvector` + Storage)
+- OpenAI (`text-embedding-3-small` + `gpt-4o-mini`)
+- LangChain text splitter, `mammoth`, `pdf2json`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Agent conventions
 
-## Learn More
+See [`.agents/skills/`](.agents/skills/) and [`.agents/rules/`](.agents/rules/).
 
-To learn more about Next.js, take a look at the following resources:
+## Security
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Never commit `.env.local`.
+- `SUPABASE_SECRET_KEY` is server-only (used in API routes for Storage).
+- The browser only talks to your Next.js API routes.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## TODOs
 
-## Deploy on Vercel
+Integrations
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- with Google (Gmail/Calendar)
+- lookup to fetch content fast instead of live search
+- pull recent data every hr
+- notifications on new emails/meetings
+- clean stalled data week's old
+- create new meetings
+- send an email to someone

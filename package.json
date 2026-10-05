@@ -1,26 +1,55 @@
 {
-  "name": "rag-search-app",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
-  },
-  "dependencies": {
-    "next": "16.3.5",
-    "react": "19.2.8",
-    "react-dom": "19.2.8"
-  },
-  "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.3.5",
-    "tailwindcss": "^4",
-    "typescript": "^5"
-  }
+	"name": "rag-search-app",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"dev": "next dev",
+		"build": "next build",
+		"start": "next start",
+		"lint": "eslint .",
+		"lint:fix": "eslint . --fix",
+		"format": "prettier --check .",
+		"format:fix": "prettier --write .",
+		"scan": "yarn format:fix && yarn lint:fix && yarn tsc --noEmit",
+		"mcp": "tsx mcp/server.ts",
+		"prepare": "husky",
+		"commitlint": "commitlint --edit"
+	},
+	"dependencies": {
+		"@langchain/core": "^1.2.14",
+		"@langchain/textsplitters": "^1.0.1",
+		"@modelcontextprotocol/sdk": "^1.30.1",
+		"@supabase/supabase-js": "^2.116.0",
+		"dotenv": "^18.0.3",
+		"js-tiktoken": "^1.0.21",
+		"mammoth": "^1.12.3",
+		"next": "16.3.5",
+		"openai": "^7.21.0",
+		"pdf2json": "^4.1.0",
+		"react": "19.2.8",
+		"react-dom": "19.2.8",
+		"tailwind-variants": "^3.2.2",
+		"zod": "^4.6.5"
+	},
+	"devDependencies": {
+		"@commitlint/cli": "^21.0.1",
+		"@commitlint/config-conventional": "^21.0.1",
+		"@tailwindcss/postcss": "^4",
+		"@types/node": "^20",
+		"@types/react": "^19",
+		"@types/react-dom": "^19",
+		"eslint": "^9",
+		"eslint-config-next": "16.3.5",
+		"eslint-config-prettier": "^10.1.1",
+		"eslint-plugin-barrel-files": "^3.0.1",
+		"eslint-plugin-prettier": "^5.2.6",
+		"eslint-plugin-unused-imports": "^4.1.4",
+		"husky": "^9.1.7",
+		"lint-staged": "^16.0.0",
+		"prettier": "^3.5.3",
+		"prettier-plugin-tailwindcss": "^0.6.11",
+		"tailwindcss": "^4",
+		"tsx": "^4.23.15",
+		"typescript": "^5"
+	}
 }

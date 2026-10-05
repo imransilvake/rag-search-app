@@ -1,0 +1,8 @@
+yarn.lock
+.next/
+out/
+build/
+node_modules/
+coverage/
+*.tsbuildinfo
+next-env.d.ts

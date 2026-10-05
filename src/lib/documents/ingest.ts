@@ -1,0 +1,65 @@
+import { cleanDocument } from '@/lib/documents/clean-text';
+import { chunkText } from '@/lib/documents/chunk-text';
+import { embedTexts } from '@/lib/documents/embed';
+import { extractTextFromFile } from '@/lib/documents/extract-text';
+import { insertChunk, uploadFileToStorage } from '@/lib/documents/repository';
+import { summarizeText } from '@/lib/documents/summarize-text';
+import type { DocumentMetadata, IngestResult } from '@/lib/documents/types';
+
+function fileExtension(fileName: string): string {
+	const parts = fileName.split('.');
+	return parts.length > 1 ? parts.pop()!.toLowerCase() : 'bin';
+}
+
+/**
+ * Full ingest pipeline for one uploaded file.
+ * Keeps Storage + DB + embeddings in one place so the API route stays thin.
+ */
+export async function ingestUploadedFile(file: File): Promise<IngestResult> {
+	const documentId = crypto.randomUUID();
+	const uploadDate = new Date().toISOString();
+	const filePath = `${documentId}.${fileExtension(file.name)}`;
+	const fileBuffer = Buffer.from(await file.arrayBuffer());
+
+	const { publicUrl } = await uploadFileToStorage(filePath, fileBuffer, file.type || 'application/octet-stream');
+
+	const rawText = await extractTextFromFile(file);
+	const { text } = cleanDocument(rawText);
+	if (!text.trim()) {
+		throw new Error('Could not extract text from file');
+	}
+
+	const summary = await summarizeText(text);
+	const chunks = await chunkText(text);
+	const embeddings = await embedTexts(chunks);
+
+	for (let i = 0; i < chunks.length; i++) {
+		const content = chunks[i];
+		const embedding = embeddings[i];
+
+		const metadata: DocumentMetadata = {
+			source: file.name,
+			document_id: documentId,
+			file_name: file.name,
+			file_type: file.type || fileExtension(file.name),
+			file_size: file.size,
+			upload_date: uploadDate,
+			chunk_index: i,
+			total_chunks: chunks.length,
+			file_path: filePath,
+			file_url: publicUrl,
+			summary
+		};
+
+		await insertChunk({ content, metadata, embedding });
+	}
+
+	return {
+		documentId,
+		fileName: file.name,
+		chunks: chunks.length,
+		textLength: text.length,
+		fileUrl: publicUrl,
+		summary
+	};
+}

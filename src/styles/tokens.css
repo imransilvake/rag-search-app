@@ -1,0 +1,104 @@
+/**
+ * Design tokens — :root (light) and .dark.
+ * Ported from portfolio GENERAL brand (single brand; no white-label switch).
+ */
+
+:root {
+	/* Primitive Tokens */
+	--color-clear-sky: oklch(100% 0 0); /* Clear Sky */
+	--color-midnight: oklch(0.1159 0.0664 288.11); /* Midnight */
+	--color-twilight-ink: oklch(0.2 0.058 286.8); /* Twilight Ink */
+	--color-overcast: oklch(0.5 0.058 286.8); /* Overcast — secondary text */
+	--color-twilight-bloom: oklch(0.57 0.24 280); /* Twilight Bloom */
+
+	/* Semantic Tokens */
+	--background: oklch(0.985 0.0035 264);
+	--foreground: var(--color-twilight-ink);
+
+	--surface-panel: oklch(1 0 0);
+	--surface-fog: oklch(0.55 0.058 286.8 / 0.5);
+	--surface-frost: oklch(0.55 0.058 286.8 / 0.1);
+
+	--midnight: var(--color-midnight);
+	--overcast: var(--color-overcast);
+
+	--primary: oklch(49.07% 0.2048 264.38);
+	--primary-hover: oklch(43.22% 0.1991 264.21);
+	--primary-active: oklch(36.81% 0.1736 264.05);
+	--primary-foreground: oklch(100% 0 0);
+
+	--secondary: oklch(0.95 0.03 280);
+	--secondary-hover: oklch(0.92 0.05 280);
+	--secondary-active: oklch(0.88 0.04 280);
+	--secondary-foreground: oklch(0.5 0.22 280);
+
+	--muted: oklch(0.55 0.058 286.8 / 0.5);
+	--muted-foreground: var(--color-overcast);
+
+	--accent: oklch(0.968 0.0035 264);
+	--accent-active: oklch(0.945 0.0035 264);
+	--accent-foreground: var(--color-twilight-ink);
+
+	--destructive: oklch(0.627 0.194 28.92);
+	--destructive-foreground: var(--color-clear-sky);
+	--warning: oklch(0.824 0.149 85.12);
+	--warning-foreground: var(--color-twilight-ink);
+	--success: oklch(0.7 0.15 145);
+	--success-foreground: var(--color-clear-sky);
+
+	--border: oklch(0.55 0.058 286.8 / 0.2);
+	--input: var(--surface-panel);
+	--ring: var(--color-twilight-bloom);
+
+	--radius: 0.75rem;
+}
+
+.dark {
+	/* Primitive Tokens - Adjusted for Dark Mode */
+	--color-clear-sky: oklch(0.15 0.02 286.8); /* Deep Charcoal/Navy base */
+	--color-midnight: oklch(0.95 0.01 288.11); /* Near white for high contrast text */
+	--color-twilight-ink: oklch(0.98 0 0 / 0.9); /* Soft white for body text */
+	--color-overcast: oklch(0.98 0 0 / 0.7); /* Muted grey-purple for secondary text */
+	--color-twilight-bloom: oklch(0.7 0.18 280); /* Brightened for dark mode vibrancy */
+
+	/* Semantic Tokens */
+	--background: oklch(0.18 0.015 240);
+	--foreground: var(--color-twilight-ink);
+
+	--surface-panel: oklch(0.22 0.02 240);
+	--surface-fog: oklch(0.25 0.04 286.8 / 0.5);
+	--surface-frost: oklch(1 0 0 / 0.05);
+
+	--midnight: var(--color-midnight);
+	--overcast: var(--color-overcast);
+
+	--primary: oklch(49.07% 0.2048 264.38);
+	--primary-hover: oklch(43.22% 0.1991 264.21);
+	--primary-active: oklch(36.81% 0.1736 264.05);
+	--primary-foreground: oklch(100% 0 0);
+
+	--secondary: oklch(0.25 0.04 280);
+	--secondary-hover: oklch(0.3 0.05 280);
+	--secondary-active: oklch(0.2 0.03 280);
+	--secondary-foreground: var(--color-twilight-bloom);
+
+	--muted: oklch(0.25 0.04 286.8 / 0.5);
+	--muted-foreground: var(--color-overcast);
+
+	--accent: oklch(0.2 0.018 240);
+	--accent-active: oklch(0.24 0.022 240);
+	--accent-foreground: var(--color-midnight);
+
+	--destructive: oklch(0.55 0.22 28.92);
+	--destructive-foreground: oklch(100% 0 0);
+	--warning: oklch(0.75 0.15 85.12);
+	--warning-foreground: oklch(100% 0 0);
+	--success: oklch(0.65 0.18 145);
+	--success-foreground: oklch(100% 0 0);
+
+	--border: oklch(1 0 0 / 0.12);
+	--input: oklch(0.1 0.02 286.8);
+	--ring: var(--color-twilight-bloom);
+
+	--radius: 0.75rem;
+}

@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+
+# Prefer Node already on PATH (Homebrew, etc.); fall back to nvm.
+if ! command -v npx >/dev/null 2>&1; then
+	export NVM_DIR="$HOME/.nvm"
+	# shellcheck disable=SC1091
+	[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+fi
+
+npx lint-staged
