@@ -50,14 +50,15 @@ Coding conventions live in [`.agents/skills/`](../.agents/skills/) and always-on
 
 ## Data model
 
-- Table `documents`: one row per **chunk**, not per file.
-- File identity lives in `metadata.document_id` (UUID). Listing documents groups by that id.
-- `metadata.summary` holds a short LLM overview of the whole file (same value on every chunk).
+- Table `library_files`: **one row per uploaded file** (name, type, size, path, url, summary, chunk count). Listing and delete use this table.
+- Table `documents`: one row per **chunk** (content + embedding). `metadata.document_id` points at `library_files.id`.
+- Chunk rows still carry denormalized file metadata for retrieval snippets; the library row is the source of truth for the Documents UI.
 - Original bytes live in the Supabase Storage bucket `documents`.
 - Table `conversations`: one row per chat thread (title from first question).
 - Table `messages`: user + assistant turns; assistant rows may store retrieved `sources` as JSON.
 - In-app search loads prior messages for the conversation and passes them into the chat model (last 20 turns).
 - Sources on the assistant message are the union of chunks returned by tool calls in that turn.
+- Retrieval clamps `match_count` to 1–10; `match_threshold` defaults to **0** so small corpora still return hits.
 
 ## Quality constraints (kept intentionally)
 
@@ -65,3 +66,5 @@ Coding conventions live in [`.agents/skills/`](../.agents/skills/) and always-on
 - Extraction, cleaning, chunking, embedding, and persistence are separate modules.
 - Types describe real invariants (`DocumentMetadata`, `MatchedChunk`) instead of `any` bags.
 - Service role key is server-only (upload/delete); browser never sees it.
+- Unit tests cover clean/chunk/file-type/ingest guards (`yarn test`); no live OpenAI or Supabase in CI-local unit runs.
+- This is a **local single-user demo** — APIs are intentionally open (no auth/RLS).

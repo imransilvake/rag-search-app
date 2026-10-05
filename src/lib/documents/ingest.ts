@@ -1,26 +1,24 @@
+import { assertUploadAllowed, fileExtension } from '@/lib/documents/ingest-guards';
 import { cleanDocument } from '@/lib/documents/clean-text';
 import { chunkText } from '@/lib/documents/chunk-text';
 import { embedTexts } from '@/lib/documents/embed';
 import { extractTextFromFile } from '@/lib/documents/extract-text';
-import { cleanupFailedIngest, insertChunk, uploadFileToStorage } from '@/lib/documents/repository';
+import { cleanupFailedIngest, insertChunk, insertLibraryFile, uploadFileToStorage } from '@/lib/documents/repository';
 import { summarizeText } from '@/lib/documents/summarize-text';
 import type { DocumentMetadata, IngestResult } from '@/lib/documents/types';
 
-function fileExtension(fileName: string): string {
-	const parts = fileName.split('.');
-	const extension = parts.length > 1 ? parts.pop() : undefined;
-	return extension ? extension.toLowerCase() : 'bin';
-}
-
 /**
  * Full ingest pipeline for one uploaded file.
- * Side effects (Storage + DB) run only after extract/chunk/embed succeed;
- * failures after that roll back uploaded bytes and any inserted chunks.
+ * Validates size/type first; Storage + DB run only after extract/chunk/embed succeed;
+ * failures after that roll back uploaded bytes, chunks, and the library file row.
  */
-export async function ingestUploadedFile(file: File): Promise<IngestResult> {
+export const ingestUploadedFile = async (file: File): Promise<IngestResult> => {
+	assertUploadAllowed(file);
+
 	const documentId = crypto.randomUUID();
 	const uploadDate = new Date().toISOString();
-	const filePath = `${documentId}.${fileExtension(file.name)}`;
+	const extension = fileExtension(file.name);
+	const filePath = `${documentId}.${extension}`;
 	const fileBuffer = Buffer.from(await file.arrayBuffer());
 
 	const rawText = await extractTextFromFile(file);
@@ -46,7 +44,7 @@ export async function ingestUploadedFile(file: File): Promise<IngestResult> {
 				source: file.name,
 				document_id: documentId,
 				file_name: file.name,
-				file_type: file.type || fileExtension(file.name),
+				file_type: file.type || extension,
 				file_size: file.size,
 				upload_date: uploadDate,
 				chunk_index: index,
@@ -58,6 +56,18 @@ export async function ingestUploadedFile(file: File): Promise<IngestResult> {
 
 			await insertChunk({ content, metadata, embedding });
 		}
+
+		await insertLibraryFile({
+			id: documentId,
+			file_name: file.name,
+			file_type: file.type || extension,
+			file_size: file.size,
+			file_path: filePath,
+			file_url: publicUrl,
+			summary,
+			total_chunks: chunks.length,
+			upload_date: uploadDate
+		});
 
 		return {
 			documentId,
@@ -73,4 +83,4 @@ export async function ingestUploadedFile(file: File): Promise<IngestResult> {
 		}
 		throw error;
 	}
-}
+};

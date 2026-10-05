@@ -4,8 +4,25 @@
 -- Enable vector similarity search
 CREATE EXTENSION IF NOT EXISTS vector;
 
+-- One row per uploaded file (library index)
+CREATE TABLE IF NOT EXISTS library_files (
+  id UUID PRIMARY KEY,
+  file_name TEXT NOT NULL,
+  file_type TEXT NOT NULL,
+  file_size BIGINT NOT NULL DEFAULT 0,
+  file_path TEXT NOT NULL,
+  file_url TEXT NOT NULL,
+  summary TEXT,
+  total_chunks INT NOT NULL DEFAULT 0,
+  upload_date TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS library_files_upload_date_idx
+  ON library_files (upload_date DESC);
+
 -- Document chunks + embeddings
 -- One uploaded file becomes many rows (one per chunk).
+-- File identity: metadata.document_id → library_files.id
 CREATE TABLE IF NOT EXISTS documents (
   id BIGSERIAL PRIMARY KEY,
   content TEXT NOT NULL,
@@ -22,6 +39,7 @@ CREATE INDEX IF NOT EXISTS documents_embedding_ivfflat_idx
   WITH (lists = 100);
 
 -- Find chunks most similar to a query embedding
+-- match_threshold defaults to 0 in app code so small corpora still return hits.
 CREATE OR REPLACE FUNCTION match_documents(
   query_embedding vector(1536),
   match_threshold float,
@@ -68,4 +86,3 @@ CREATE TABLE IF NOT EXISTS messages (
 
 CREATE INDEX IF NOT EXISTS messages_conversation_created_idx
   ON messages (conversation_id, created_at);
-

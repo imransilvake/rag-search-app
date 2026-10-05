@@ -7,11 +7,11 @@ const DEFAULT_CHUNK_OVERLAP = 64;
 
 const encoding = getEncoding('cl100k_base');
 
-export async function chunkText(text: string, options?: { chunkSize?: number; chunkOverlap?: number }): Promise<string[]> {
+export const chunkText = async (text: string, options?: { chunkSize?: number; chunkOverlap?: number }): Promise<string[]> => {
 	const splitter = new RecursiveCharacterTextSplitter({
 		chunkSize: options?.chunkSize ?? DEFAULT_CHUNK_SIZE,
 		chunkOverlap: options?.chunkOverlap ?? DEFAULT_CHUNK_OVERLAP,
 		lengthFunction: (value) => encoding.encode(value).length
 	});
 	return splitter.splitText(text);
-}
+};

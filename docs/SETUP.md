@@ -58,10 +58,14 @@ Open [http://localhost:3000](http://localhost:3000).
 
 If you applied an **older** `schema.sql` (before conversations were included), run [`supabase/conversations.sql`](../supabase/conversations.sql) in the SQL Editor. Fresh installs only need `schema.sql`.
 
+### If `library_files` is missing
+
+If you applied an older schema (chunks-only, no library index), run [`supabase/library-files.sql`](../supabase/library-files.sql). It creates `library_files` and backfills rows from existing chunk metadata. Fresh installs get this table from `schema.sql`.
+
 ### Smoke test
 
-1. Go to **Documents** → upload a small `.txt` file.
-2. Confirm rows appear in Supabase **Table Editor** → `documents`.
+1. Go to **Documents** → upload a small `.txt` file (max **10 MB**; `.pdf`, `.docx`, or `.txt`).
+2. Confirm one row in Supabase **Table Editor** → `library_files`, and chunk rows in `documents`.
 3. Go to **Search** and ask a question about the file.
 4. You should see an answer plus source chunks, and a new entry under **History**.
 5. Refresh the page — the conversation should still appear in History.
@@ -70,13 +74,15 @@ If you applied an **older** `schema.sql` (before conversations were included), r
 
 ## Common failures
 
-| Symptom                          | Likely cause                                                                                  |
-| -------------------------------- | --------------------------------------------------------------------------------------------- |
-| Storage RLS error on upload      | Missing / wrong `SUPABASE_SECRET_KEY`                                                         |
-| Env / missing key errors         | Incomplete `.env.local` — restart `yarn dev` after edits                                      |
-| Empty PDF text                   | Scanned/image PDF (no extractable text) — try `.txt` first                                    |
-| `match_documents` errors         | Schema SQL not applied, or `vector` extension missing                                         |
-| Index creation fails on empty DB | Rare with `pgvector`; if `ivfflat` index errors, create it after your first successful upload |
+| Symptom                            | Likely cause                                                                                  |
+| ---------------------------------- | --------------------------------------------------------------------------------------------- |
+| Storage RLS error on upload        | Missing / wrong `SUPABASE_SECRET_KEY`                                                         |
+| Env / missing key errors           | Incomplete `.env.local` — restart `yarn dev` after edits                                      |
+| Empty PDF text                     | Scanned/image PDF (no extractable text) — try `.txt` first                                    |
+| File too large / unsupported       | Max 10 MB; only `.pdf`, `.docx`, `.txt`                                                       |
+| Documents list empty after upgrade | Run [`library-files.sql`](../supabase/library-files.sql) to create/backfill `library_files`   |
+| `match_documents` errors           | Schema SQL not applied, or `vector` extension missing                                         |
+| Index creation fails on empty DB   | Rare with `pgvector`; if `ivfflat` index errors, create it after your first successful upload |
 
 ## Cost note
 

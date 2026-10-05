@@ -2,6 +2,8 @@
 
 Upload **PDF, DOCX, or TXT** → **OpenAI** embeds and indexes your content → **Supabase** holds vectors (`pgvector`) and file storage → ask questions in **multi-turn chat** with **source chunks** and **saved conversation history**. Built with **Next.js** and **TypeScript**.
 
+**Local demo only.** APIs have no login on purpose — fine for learning on your machine, not for a public deploy. Uploads are limited to **10 MB** and `.pdf` / `.docx` / `.txt`.
+
 <table>
   <tr>
     <td width="50%"><img src="docs/screenshots/01-search-chat.png" alt="Multi-turn RAG chat with saved history" /></td>
@@ -84,6 +86,7 @@ More: [`docs/SETUP.md#common-failures`](docs/SETUP.md#common-failures).
 | [`docs/directory-structure.md`](docs/directory-structure.md) | Folder map (`app`, `screens`, `lib`, …)                 |
 | [`docs/MCP.md`](docs/MCP.md)                                 | Cursor MCP (`search_documents`, `list_documents`)       |
 | [`supabase/schema.sql`](supabase/schema.sql)                 | Database schema (source of truth)                       |
+| [`supabase/library-files.sql`](supabase/library-files.sql)   | Incremental: `library_files` + backfill for older DBs   |
 | [`supabase/conversations.sql`](supabase/conversations.sql)   | Only if you applied an older schema without chat tables |
 
 ## Scripts
@@ -92,11 +95,12 @@ More: [`docs/SETUP.md#common-failures`](docs/SETUP.md#common-failures).
 yarn dev          # development server (localhost:3000)
 yarn build        # production build
 yarn start        # serve production build
+yarn test         # Vitest unit tests (no network)
 yarn lint         # ESLint
 yarn lint:fix     # ESLint --fix
 yarn format       # Prettier check
 yarn format:fix   # Prettier write
-yarn scan         # format:fix + lint:fix + tsc --noEmit
+yarn scan         # format:fix + lint:fix + tsc --noEmit + test
 yarn mcp          # stdio MCP server for Cursor (see docs/MCP.md)
 ```
 
@@ -111,6 +115,7 @@ Commits use **Husky** (lint-staged + commitlint). Message format: [Conventional 
 
 ## Security
 
+- Single-user local demo: API routes are open; do not expose this app on a public network.
 - `.env.local` stays local only.
 - `SUPABASE_SECRET_KEY` is **server-only** (API routes / ingest).
 - The browser calls **your** Next.js API routes, not Supabase with elevated keys.

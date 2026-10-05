@@ -17,7 +17,7 @@ export async function POST(req: Request) {
 		return NextResponse.json({ success: true, ...result });
 	} catch (error) {
 		const message = error instanceof Error ? error.message : '';
-		const status = message.includes('Unsupported file') || message.includes('Could not extract') ? 400 : 500;
+		const status = message.includes('Unsupported file') || message.includes('Could not extract') || message.includes('too large') || message.includes('File is empty') ? 400 : 500;
 		return jsonError(error, status);
 	}
 }

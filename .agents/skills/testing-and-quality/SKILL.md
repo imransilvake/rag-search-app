@@ -22,7 +22,8 @@ yarn lint          # eslint .
 yarn lint:fix      # eslint . --fix
 yarn format        # prettier --check .
 yarn format:fix    # prettier --write .
-yarn scan          # format:fix + lint:fix + tsc --noEmit
+yarn scan          # format:fix + lint:fix + tsc --noEmit + yarn test
+yarn test          # Vitest unit tests (no network)
 ```
 
 ## Commit Messages

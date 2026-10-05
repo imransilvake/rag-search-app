@@ -11,7 +11,9 @@
 		"lint:fix": "eslint . --fix",
 		"format": "prettier --check .",
 		"format:fix": "prettier --write .",
-		"scan": "yarn format:fix && yarn lint:fix && yarn tsc --noEmit",
+		"scan": "yarn format:fix && yarn lint:fix && yarn tsc --noEmit && yarn test",
+		"test": "vitest run",
+		"test:watch": "vitest",
 		"mcp": "tsx mcp/server.ts",
 		"prepare": "husky",
 		"commitlint": "commitlint --edit"
@@ -51,6 +53,8 @@
 		"prettier-plugin-tailwindcss": "^0.6.11",
 		"tailwindcss": "^4",
 		"tsx": "^4.23.15",
-		"typescript": "^5"
+		"typescript": "^5",
+		"vite": "^8.3.2",
+		"vitest": "^5.0.3"
 	}
 }

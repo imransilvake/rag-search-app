@@ -1,7 +1,7 @@
 /** Normalize extracted text before chunk → embed (deterministic, no LLM). */
 
 /** Unicode normalize, fix PDF hyphen breaks, collapse whitespace, drop controls. */
-function normalizeText(text: string): string {
+const normalizeText = (text: string): string => {
 	let out = text.normalize('NFKC');
 
 	// "informa-\ntion" → "information" (common PDF extraction artifact)
@@ -14,13 +14,13 @@ function normalizeText(text: string): string {
 	out = out.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
 
 	return out.trim();
-}
+};
 
 /**
  * Drop separator / page-number-only lines.
  * Avoids aggressive "length < 3" filters that remove real short tokens.
  */
-function stripBoilerplate(text: string): string {
+const stripBoilerplate = (text: string): string => {
 	const lines = text.split('\n');
 	const cleaned: string[] = [];
 
@@ -39,10 +39,10 @@ function stripBoilerplate(text: string): string {
 	}
 
 	return cleaned.join('\n');
-}
+};
 
 /** Run clean on a single extracted text blob. */
-export function cleanDocument(rawText: string): { text: string } {
+export const cleanDocument = (rawText: string): { text: string } => {
 	let text = normalizeText(rawText);
 	text = stripBoilerplate(text);
 
@@ -50,4 +50,4 @@ export function cleanDocument(rawText: string): { text: string } {
 	text = text.replace(/\n{3,}/g, '\n\n').trim();
 
 	return { text };
-}
+};

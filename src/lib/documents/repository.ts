@@ -1,7 +1,45 @@
 import { DOCUMENTS_BUCKET, getSupabaseAnon, getSupabaseService } from '@/lib/supabase/client';
 import type { DocumentDetail, DocumentMetadata, DocumentSummary, MatchedChunk } from '@/lib/documents/types';
 
-export async function uploadFileToStorage(filePath: string, fileBuffer: Buffer, contentType: string): Promise<{ publicUrl: string }> {
+type LibraryFileRow = {
+	id: string;
+	file_name: string;
+	file_type: string;
+	file_size: number;
+	file_path: string;
+	file_url: string;
+	summary: string | null;
+	total_chunks: number;
+	upload_date: string;
+};
+
+const libraryFileToSummary = (row: LibraryFileRow): DocumentSummary => ({
+	id: row.id,
+	file_name: row.file_name || 'Unknown',
+	file_type: row.file_type || 'unknown',
+	file_size: Number(row.file_size) || 0,
+	upload_date: row.upload_date || new Date().toISOString(),
+	total_chunks: Number(row.total_chunks) || 0,
+	file_url: row.file_url,
+	file_path: row.file_path,
+	summary: row.summary ?? undefined
+});
+
+const libraryFileToMetadata = (row: LibraryFileRow): DocumentMetadata => ({
+	source: row.file_name,
+	document_id: row.id,
+	file_name: row.file_name,
+	file_type: row.file_type,
+	file_size: Number(row.file_size) || 0,
+	upload_date: row.upload_date,
+	chunk_index: 0,
+	total_chunks: Number(row.total_chunks) || 0,
+	file_path: row.file_path,
+	file_url: row.file_url,
+	summary: row.summary ?? undefined
+});
+
+export const uploadFileToStorage = async (filePath: string, fileBuffer: Buffer, contentType: string): Promise<{ publicUrl: string }> => {
 	const supabase = getSupabaseService();
 	const { error } = await supabase.storage.from(DOCUMENTS_BUCKET).upload(filePath, fileBuffer, {
 		contentType,
@@ -18,9 +56,9 @@ export async function uploadFileToStorage(filePath: string, fileBuffer: Buffer, 
 
 	const { data } = supabase.storage.from(DOCUMENTS_BUCKET).getPublicUrl(filePath);
 	return { publicUrl: data.publicUrl };
-}
+};
 
-export async function insertChunk(params: { content: string; metadata: DocumentMetadata; embedding: number[] }): Promise<void> {
+export const insertChunk = async (params: { content: string; metadata: DocumentMetadata; embedding: number[] }): Promise<void> => {
 	const supabase = getSupabaseAnon();
 	const { error } = await supabase.from('documents').insert({
 		content: params.content,
@@ -33,9 +71,28 @@ export async function insertChunk(params: { content: string; metadata: DocumentM
 	if (error) {
 		throw new Error(error.message);
 	}
-}
+};
 
-export async function matchDocuments(params: { queryEmbedding: number[]; matchThreshold?: number; matchCount?: number }): Promise<MatchedChunk[]> {
+export const insertLibraryFile = async (row: LibraryFileRow): Promise<void> => {
+	const supabase = getSupabaseAnon();
+	const { error } = await supabase.from('library_files').insert({
+		id: row.id,
+		file_name: row.file_name,
+		file_type: row.file_type,
+		file_size: row.file_size,
+		file_path: row.file_path,
+		file_url: row.file_url,
+		summary: row.summary,
+		total_chunks: row.total_chunks,
+		upload_date: row.upload_date
+	});
+
+	if (error) {
+		throw new Error(error.message);
+	}
+};
+
+export const matchDocuments = async (params: { queryEmbedding: number[]; matchThreshold?: number; matchCount?: number }): Promise<MatchedChunk[]> => {
 	const supabase = getSupabaseAnon();
 	const { data, error } = await supabase.rpc('match_documents', {
 		query_embedding: JSON.stringify(params.queryEmbedding),
@@ -48,89 +105,96 @@ export async function matchDocuments(params: { queryEmbedding: number[]; matchTh
 	}
 
 	return (data ?? []) as MatchedChunk[];
-}
+};
 
-function toSummary(metadata: DocumentMetadata): DocumentSummary {
-	return {
-		id: metadata.document_id,
-		file_name: metadata.file_name || 'Unknown',
-		file_type: metadata.file_type || 'unknown',
-		file_size: metadata.file_size || 0,
-		upload_date: metadata.upload_date || new Date().toISOString(),
-		total_chunks: metadata.total_chunks || 0,
-		file_url: metadata.file_url,
-		file_path: metadata.file_path,
-		summary: metadata.summary
-	};
-}
-
-export async function listDocuments(): Promise<DocumentSummary[]> {
+export const listDocuments = async (): Promise<DocumentSummary[]> => {
 	const supabase = getSupabaseAnon();
-	const { data, error } = await supabase.from('documents').select('metadata');
+	const { data, error } = await supabase
+		.from('library_files')
+		.select('id, file_name, file_type, file_size, file_path, file_url, summary, total_chunks, upload_date')
+		.order('upload_date', { ascending: false });
 
 	if (error) {
 		throw new Error(error.message);
 	}
 
-	const byId = new Map<string, DocumentSummary>();
-	for (const row of data ?? []) {
-		const metadata = row.metadata as DocumentMetadata | null;
-		if (!metadata?.document_id || byId.has(metadata.document_id)) continue;
-		byId.set(metadata.document_id, toSummary(metadata));
-	}
+	return (data ?? []).map((row) => libraryFileToSummary(row as LibraryFileRow));
+};
 
-	return Array.from(byId.values());
-}
-
-export async function getDocumentDetail(documentId: string): Promise<DocumentDetail> {
+export const getDocumentDetail = async (documentId: string): Promise<DocumentDetail> => {
 	const supabase = getSupabaseAnon();
-	const { data: chunks, error } = await supabase.from('documents').select('content, metadata').eq('metadata->>document_id', documentId);
+	const { data: fileRow, error: fileError } = await supabase
+		.from('library_files')
+		.select('id, file_name, file_type, file_size, file_path, file_url, summary, total_chunks, upload_date')
+		.eq('id', documentId)
+		.maybeSingle();
 
-	if (error || !chunks?.length) {
-		throw new Error(error?.message || 'Document not found');
+	if (fileError) {
+		throw new Error(fileError.message);
 	}
 
-	// JSON metadata fields sort as text in Postgres — sort numerically in app code.
-	const ordered = [...chunks].sort((left, right) => {
+	if (!fileRow) {
+		throw new Error('Document not found');
+	}
+
+	const { data: chunks, error: chunksError } = await supabase.from('documents').select('content, metadata').eq('metadata->>document_id', documentId);
+
+	if (chunksError) {
+		throw new Error(chunksError.message);
+	}
+
+	const ordered = [...(chunks ?? [])].sort((left, right) => {
 		const leftIndex = (left.metadata as DocumentMetadata | null)?.chunk_index ?? 0;
 		const rightIndex = (right.metadata as DocumentMetadata | null)?.chunk_index ?? 0;
 		return leftIndex - rightIndex;
 	});
 
-	const metadata = ordered[0].metadata as DocumentMetadata;
+	const summary = libraryFileToSummary(fileRow as LibraryFileRow);
 	return {
-		...toSummary(metadata),
-		id: documentId,
-		total_chunks: ordered.length,
+		...summary,
+		total_chunks: ordered.length || summary.total_chunks,
 		fullText: ordered.map((chunk) => chunk.content as string).join('\n\n')
 	};
-}
+};
 
-/** Best-effort rollback after a failed ingest (Storage object and/or partial chunk rows). */
-export async function cleanupFailedIngest(params: { documentId: string; filePath: string }): Promise<void> {
+/** Best-effort rollback after a failed ingest (Storage object, chunks, library file). */
+export const cleanupFailedIngest = async (params: { documentId: string; filePath: string }): Promise<void> => {
 	const supabaseService = getSupabaseService();
 	const supabaseAnon = getSupabaseAnon();
 
 	await supabaseService.storage.from(DOCUMENTS_BUCKET).remove([params.filePath]);
 
-	const { error } = await supabaseAnon.from('documents').delete().eq('metadata->>document_id', params.documentId);
+	const { error: chunksError } = await supabaseAnon.from('documents').delete().eq('metadata->>document_id', params.documentId);
+	if (chunksError) {
+		throw new Error(chunksError.message);
+	}
+
+	const { error: fileError } = await supabaseAnon.from('library_files').delete().eq('id', params.documentId);
+	if (fileError) {
+		throw new Error(fileError.message);
+	}
+};
+
+export const getDocumentMetadata = async (documentId: string): Promise<DocumentMetadata> => {
+	const supabase = getSupabaseAnon();
+	const { data, error } = await supabase
+		.from('library_files')
+		.select('id, file_name, file_type, file_size, file_path, file_url, summary, total_chunks, upload_date')
+		.eq('id', documentId)
+		.maybeSingle();
+
 	if (error) {
 		throw new Error(error.message);
 	}
-}
 
-export async function getDocumentMetadata(documentId: string): Promise<DocumentMetadata> {
-	const supabase = getSupabaseAnon();
-	const { data, error } = await supabase.from('documents').select('metadata').eq('metadata->>document_id', documentId).limit(1);
-
-	if (error || !data?.length) {
-		throw new Error(error?.message || 'Document not found');
+	if (!data) {
+		throw new Error('Document not found');
 	}
 
-	return data[0].metadata as DocumentMetadata;
-}
+	return libraryFileToMetadata(data as LibraryFileRow);
+};
 
-export async function downloadStoredFile(filePath: string): Promise<Blob> {
+export const downloadStoredFile = async (filePath: string): Promise<Blob> => {
 	const supabase = getSupabaseService();
 	const { data, error } = await supabase.storage.from(DOCUMENTS_BUCKET).download(filePath);
 
@@ -139,9 +203,9 @@ export async function downloadStoredFile(filePath: string): Promise<Blob> {
 	}
 
 	return data;
-}
+};
 
-export async function deleteDocument(documentId: string): Promise<{ fileDeleted: boolean }> {
+export const deleteDocument = async (documentId: string): Promise<{ fileDeleted: boolean }> => {
 	const metadata = await getDocumentMetadata(documentId).catch(() => null);
 	const filePath = metadata?.file_path;
 	let fileDeleted = false;
@@ -153,11 +217,16 @@ export async function deleteDocument(documentId: string): Promise<{ fileDeleted:
 	}
 
 	const supabase = getSupabaseAnon();
-	const { error } = await supabase.from('documents').delete().eq('metadata->>document_id', documentId);
 
-	if (error) {
-		throw new Error(error.message);
+	const { error: chunksError } = await supabase.from('documents').delete().eq('metadata->>document_id', documentId);
+	if (chunksError) {
+		throw new Error(chunksError.message);
+	}
+
+	const { error: fileError } = await supabase.from('library_files').delete().eq('id', documentId);
+	if (fileError) {
+		throw new Error(fileError.message);
 	}
 
 	return { fileDeleted };
-}
+};

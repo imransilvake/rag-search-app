@@ -10,8 +10,10 @@ export type RetrieveOptions = {
 /**
  * Embed a query and return the top similar document chunks.
  * Shared by in-app tool calling and the Cursor MCP server.
+ * `matchCount` is clamped to 1–10. `matchThreshold` defaults to 0 so small
+ * corpora still return hits (similarity filter is effectively off).
  */
-export async function retrieveRelevantChunks(query: string, options: RetrieveOptions = {}): Promise<MatchedChunk[]> {
+export const retrieveRelevantChunks = async (query: string, options: RetrieveOptions = {}): Promise<MatchedChunk[]> => {
 	const trimmed = query.trim();
 	if (!trimmed) {
 		throw new Error('Query is required');
@@ -25,4 +27,4 @@ export async function retrieveRelevantChunks(query: string, options: RetrieveOpt
 		matchThreshold: options.matchThreshold ?? 0,
 		matchCount
 	});
-}
+};
